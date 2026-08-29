@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasks — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item active"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">✅ Tasks</div>
+          <div class="page-subtitle">Assign and track tasks for students & teachers</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="tasks">
+
+      <!-- Assign Task Form -->
+      <div class="glass-panel" id="taskAssignForm">
+        <h4 style="margin-bottom:16px;color:var(--primary)">➕ Assign New Task</h4>
+        <div class="form-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Task Title *</label>
+            <input type="text" id="taskTitle" class="form-control" placeholder="e.g. Complete MS Word Assignment">
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Description</label>
+            <textarea id="taskDesc" class="form-control" rows="2" placeholder="Detailed description of the task..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assign To</label>
+            <select id="taskAssignTo" class="form-control">
+              <option value="">-- Select Person --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="taskPriority" class="form-control">
+              <option value="Low">🟢 Low</option>
+              <option value="Medium" selected>🟡 Medium</option>
+              <option value="High">🔴 High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Due Date</label>
+            <input type="date" id="taskDue" class="form-control">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveTask()" style="margin-top:8px">📌 Assign Task</button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:0.82rem;color:var(--text-muted);font-weight:600">Filter:</span>
+        <button class="btn btn-sm task-tab-btn active" data-filter="all" onclick="filterTasksByTab(this,'all')">
+          All <span class="task-count" data-filter="all" style="background:var(--glass-bg-heavy);border-radius:999px;padding:1px 7px;font-size:0.72rem;margin-left:4px">0</span>
+        </button>
+        <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="Pending" onclick="filterTasksByTab(this,'Pending')">
+          ⏳ Pending <span class="task-count" data-filter="Pending" style="background:var(--glass-bg-heavy);border-radius:999px;padding:1px 7px;font-size:0.72rem;margin-left:4px">0</span>
+        </button>
+        <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="In Progress" onclick="filterTasksByTab(this,'In Progress')">
+          ▶ In Progress <span class="task-count" data-filter="In Progress" style="background:var(--glass-bg-heavy);border-radius:999px;padding:1px 7px;font-size:0.72rem;margin-left:4px">0</span>
+        </button>
+        <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="Completed" onclick="filterTasksByTab(this,'Completed')">
+          ✅ Completed <span class="task-count" data-filter="Completed" style="background:var(--glass-bg-heavy);border-radius:999px;padding:1px 7px;font-size:0.72rem;margin-left:4px">0</span>
+        </button>
+      </div>
+
+      <!-- Tasks List -->
+      <div id="tasksList">
+        <div class="empty-state"><div class="loader"></div><p>Loading tasks...</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/tasks.js?v=20260704g"></script>
+</body>
+</html>

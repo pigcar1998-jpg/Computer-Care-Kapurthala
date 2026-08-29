@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Students & Teachers — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item active"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">👥 Students & Teachers</div>
+          <div class="page-subtitle">Manage all student and teacher records</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-danger btn-sm" id="logoutBtn2" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <!-- People Tab Switch -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+        <div class="tab-nav" style="display:inline-flex">
+          <button class="tab-btn active" data-people-tab="students">👨‍🎓 Students</button>
+          <button class="tab-btn" data-people-tab="teachers">👨‍🏫 Teachers</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="openAddStudentModal()" id="addPersonBtn">➕ Add Student</button>
+          <button class="btn btn-import btn-sm" onclick="ExcelImport.openImportModal()" style="display:flex;align-items:center;gap:6px">
+            📥 Import Excel
+          </button>
+          <div class="dropdown">
+            <button class="btn btn-secondary" data-dropdown-trigger>📤 Export ▾</button>
+            <div class="dropdown-menu">
+              <button class="dropdown-item" onclick="exportStudents('csv')">📊 Students CSV</button>
+              <button class="dropdown-item" onclick="exportStudents('pdf')">📄 Students PDF</button>
+              <button class="dropdown-item" onclick="exportStudents('json')">🗂 Students JSON</button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item" onclick="exportTeachers('csv')">📊 Teachers CSV</button>
+              <button class="dropdown-item" onclick="exportTeachers('pdf')">📄 Teachers PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDENTS SECTION -->
+      <div id="studentSection">
+        <div class="glass-panel" style="padding:16px 20px;margin-bottom:16px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+            <div class="search-wrapper" style="flex:1;min-width:200px">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="studentSearch" class="form-control" placeholder="Search students by name, course, batch...">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+<select id="statusFilter" class="form-control" style="display:none">
+                <option value="All">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Leave">Leave</option>
+                <option value="Continue">Continue</option>
+                <option value="Left">Left</option>
+                <option value="Complete">Complete</option>
+              </select>
+              <div class="status-tab-bar" id="statusTabBar">
+                <button class="status-tab active" onclick="setStatusTab('All',this)">📋 All</button>
+                <button class="status-tab st-pending" onclick="setStatusTab('Pending',this)">⏳ Pending</button>
+                <button class="status-tab st-continue" onclick="setStatusTab('Continue',this)">▶️ Continue</button>
+                <button class="status-tab st-complete" onclick="setStatusTab('Complete',this)">✅ Complete</button>
+                <button class="status-tab st-leave" onclick="setStatusTab('Leave',this)">🌿 Leave</button>
+                <button class="status-tab st-left" onclick="setStatusTab('Left',this)">🚪 Left</button>
+              </div>
+              <select id="studentGenderFilter" class="form-control" style="width:auto">
+                <option value="All">All Boys & Girls</option>
+                <option value="Male">Boys</option>
+                <option value="Female">Girls</option>
+              </select>
+              <select id="courseFilter" class="form-control" style="width:auto">
+                <option value="All">All Courses</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="glass-panel" style="padding:0">
+          <div class="table-container">
+            <table id="studentTable">
+              <thead><tr>
+                <th>Student</th><th>Course</th><th>Batch/PC</th>
+                <th>Status</th><th>Admission</th><th>Balance</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="studentTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEACHERS SECTION -->
+      <div id="teacherSection" style="display:none">
+        <div class="glass-panel" style="padding:16px 20px;margin-bottom:16px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+            <div class="search-wrapper" style="flex:1;min-width:200px">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="teacherSearch" class="form-control" placeholder="Search teachers...">
+            </div>
+            <select id="teacherGenderFilter" class="form-control" style="width:auto">
+              <option value="All">All Teachers</option>
+              <option value="Male">Male Teachers</option>
+              <option value="Female">Female Teachers</option>
+            </select>
+            <button class="btn btn-primary" onclick="openAddTeacherModal()">➕ Add Teacher</button>
+          </div>
+        </div>
+        <div class="glass-panel" style="padding:0">
+          <div class="table-container">
+            <table id="teacherTable">
+              <thead><tr><th>Teacher</th><th>Qualification</th><th>Subject</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="teacherTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT STUDENT MODAL -->
+<div class="modal-overlay" id="studentModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="studentModalTitle">➕ Add New Student</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="studentForm">
+        <!-- Basic Info -->
+        <h4 style="margin-bottom:14px;color:var(--primary)">📋 Personal Information</h4>
+        <div class="profile-image-field" style="margin-bottom:16px">
+          <div id="sf_profileImagePreview" class="profile-image-preview"><span>No Image</span></div>
+          <div class="form-group" style="min-width:240px;flex:1">
+            <label class="form-label">Student Square Profile Image</label>
+            <input type="file" id="sf_profileImage" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="sf_name" class="form-control" required placeholder="Student full name"></div>
+          <div class="form-group"><label class="form-label">Father's Name</label><input type="text" id="sf_fatherName" class="form-control" placeholder="Father's name"></div>
+          <div class="form-group"><label class="form-label">Mother's Name</label><input type="text" id="sf_motherName" class="form-control" placeholder="Mother's name"></div>
+          <div class="form-group"><label class="form-label">Gender</label>
+            <select id="sf_gender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="sf_dob" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Mobile Number</label><input type="tel" id="sf_mobile" class="form-control" placeholder="10-digit mobile"></div>
+          <div class="form-group"><label class="form-label">Alternate Mobile</label><input type="tel" id="sf_altMobile" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="sf_email" class="form-control" placeholder="email@example.com"></div>
+          <div class="form-group"><label class="form-label">Aadhaar Card No.</label><input type="text" id="sf_aadhaar" class="form-control" placeholder="XXXX XXXX XXXX"></div>
+          <div class="form-group"><label class="form-label">Qualification</label>
+            <select id="sf_qualification" class="form-control"><option>10th</option><option>12th</option><option>Graduation</option><option>Post Graduate</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Religion</label>
+            <select id="sf_religion" class="form-control"><option>Hindu</option><option>Sikh</option><option>Muslim</option><option>Christian</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Category/Caste</label>
+            <select id="sf_caste" class="form-control"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Marital Status</label>
+            <select id="sf_maritalStatus" class="form-control"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+          <div class="form-group"><label class="form-label">Family Members</label><input type="number" id="sf_familyMembers" class="form-control" min="1"></div>
+          <div class="form-group"><label class="form-label">Annual Family Income (₹)</label><input type="number" id="sf_annualIncome" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Father's Occupation</label><input type="text" id="sf_fatherOccupation" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Mother's Occupation</label><input type="text" id="sf_motherOccupation" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Own Occupation</label><input type="text" id="sf_occupation" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Work Experience (years)</label><input type="number" id="sf_experience" class="form-control" min="0"></div>
+        </div>
+
+        <!-- Address -->
+        <h4 style="margin:20px 0 14px;color:var(--primary)">📍 Address</h4>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Address</label><input type="text" id="sf_address" class="form-control" placeholder="House No., Street"></div>
+          <div class="form-group"><label class="form-label">Landmark</label><input type="text" id="sf_landmark" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Village/City</label><input type="text" id="sf_village" class="form-control"></div>
+          <div class="form-group"><label class="form-label">District</label><input type="text" id="sf_district" class="form-control" value="Kapurthala"></div>
+          <div class="form-group"><label class="form-label">State</label><input type="text" id="sf_state" class="form-control" value="Punjab"></div>
+          <div class="form-group"><label class="form-label">Pin Code</label><input type="text" id="sf_pincode" class="form-control" value="144601"></div>
+          <div class="form-group"><label class="form-label">Reference</label><input type="text" id="sf_reference" class="form-control" placeholder="How did they hear about us?"></div>
+        </div>
+
+        <!-- Course Selection -->
+        <h4 style="margin:20px 0 14px;color:var(--primary)">🎓 Course & Batch Details</h4>
+        <div id="courseCheckboxContainer"></div>
+        <div class="form-grid" style="margin-top:12px">
+          <div class="form-group"><label class="form-label">Batch No.</label>
+            <select id="sf_batchNo" class="form-control">
+              <option>Batch 1</option><option>Batch 2</option><option>Batch 3</option>
+              <option>Batch 4</option><option>Batch 5</option><option>Batch 6</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">PC/Laptop No.</label>
+            <select id="sf_pcNo" class="form-control">
+              <option>PC 1</option><option>PC 2</option><option>PC 3</option>
+              <option>PC 4</option><option>PC 5</option><option>PC 6</option>
+              <option>PC 7</option><option>PC 8</option><option>PC 9</option><option>PC 10</option>
+              <option>Laptop 1</option><option>Laptop 2</option><option>Laptop 3</option>
+              <option>Laptop 4</option><option>Laptop 5</option><option>Laptop 6</option><option>Laptop 7</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">Timings</label>
+            <select id="sf_timings" class="form-control">
+              <option>9:00 AM - 10:00 AM</option><option>10:00 AM - 11:00 AM</option>
+              <option>11:00 AM - 12:00 PM</option><option>12:00 PM - 1:00 PM</option>
+              <option>1:00 PM - 2:00 PM</option><option>2:00 PM - 3:00 PM</option>
+              <option>3:00 PM - 4:00 PM</option><option>4:00 PM - 5:00 PM</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">Days</label>
+            <select id="sf_day" class="form-control">
+              <option>Mon-Fri</option><option>Mon-Sat</option><option>Tue-Thu</option>
+              <option>Mon-Wed-Fri</option><option>Tue-Thu-Sat</option><option>Daily</option>
+            </select></div>
+          <div class="form-group"><label class="form-label">Total Fees (₹)</label><input type="number" id="sf_totalFees" class="form-control" placeholder="Total course fees"></div>
+          <div class="form-group"><label class="form-label">Monthly Fees (₹)</label><input type="number" id="sf_monthlyFees" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Duration</label><input type="text" id="sf_duration" class="form-control" placeholder="e.g. 3 Months"></div>
+          <div class="form-group"><label class="form-label">Admission Date</label><input type="date" id="sf_admissionDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Course Status</label>
+            <select id="sf_courseStatus" class="form-control">
+              <option>Pending</option><option selected>Continue</option>
+              <option>Complete</option><option>Leave</option><option>Left</option>
+            </select></div>
+        </div>
+
+        <!-- Academic -->
+        <h4 style="margin:20px 0 14px;color:var(--primary)">📝 Academic Details</h4>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Grade</label>
+            <select id="sf_grade" class="form-control"><option value="">—</option><option>A+</option><option>A</option><option>B+</option><option>B</option><option>C</option><option>D</option></select></div>
+          <div class="form-group"><label class="form-label">Percentage (%)</label><input type="number" id="sf_percentage" class="form-control" min="0" max="100"></div>
+          <div class="form-group"><label class="form-label">Rank</label><input type="number" id="sf_rank" class="form-control" min="1"></div>
+          <div class="form-group"><label class="form-label">Resignation No.</label><input type="text" id="sf_resignNo" class="form-control"></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Feedback / Notes</label><textarea id="sf_feedback" class="form-control" rows="2"></textarea></div>
+        </div>
+
+        <!-- Login -->
+        <h4 style="margin:20px 0 14px;color:var(--primary)">🔐 Student Portal Access</h4>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Username</label><input type="text" id="sf_username" class="form-control" placeholder="Student login username"></div>
+          <div class="form-group"><label class="form-label">Password</label><input type="password" id="sf_password" class="form-control" placeholder="student123"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('studentForm').dispatchEvent(new Event('submit'))">💾 Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT TEACHER MODAL -->
+<div class="modal-overlay" id="teacherModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="teacherModalTitle">➕ Add New Teacher</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="teacherForm">
+        <div class="profile-image-field" style="margin-bottom:16px">
+          <div id="tf_profileImagePreview" class="profile-image-preview"><span>No Image</span></div>
+          <div class="form-group" style="min-width:240px;flex:1">
+            <label class="form-label">Teacher Square Profile Image</label>
+            <input type="file" id="tf_profileImage" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="tf_name" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Qualification</label><input type="text" id="tf_qualification" class="form-control" placeholder="e.g. MCA, BCA"></div>
+          <div class="form-group"><label class="form-label">Subject/Expertise</label><input type="text" id="tf_subject" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Mobile</label><input type="tel" id="tf_mobile" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="tf_email" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Gender</label>
+            <select id="tf_gender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="tf_dob" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Join Date</label><input type="date" id="tf_joinDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Username</label><input type="text" id="tf_username" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Password</label><input type="password" id="tf_password" class="form-control" value="teacher123"></div>
+          <div class="form-group"><label class="form-label">Performance</label>
+            <select id="tf_performance" class="form-control"><option>Excellent</option><option>Good</option><option>Average</option><option>Below Average</option></select></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Address</label><input type="text" id="tf_address" class="form-control"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('teacherForm').dispatchEvent(new Event('submit'))">💾 Save Teacher</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW TEACHER MODAL -->
+<div class="modal-overlay" id="viewTeacherModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="viewTeacherModalTitle">Teacher Profile</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="viewTeacherContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW STUDENT MODAL -->
+<div class="modal-overlay" id="viewStudentModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="viewStudentModalTitle">👤 Student Profile</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="viewStudentContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/excel-import.js?v=20260704g"></script>
+<script src="js/profiles.js?v=20260704g"></script>
+<script src="js/students.js?v=20260704g"></script>
+<script>
+  // Populate course filter
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const courses = DB.getCourses();
+    const sel = document.getElementById('courseFilter');
+    if(sel) courses.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o); });
+  });
+
+  // Tab switch for add button label
+  document.querySelectorAll('[data-people-tab]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tab = btn.dataset.peopleTab;
+      const addBtn = document.getElementById('addPersonBtn');
+      if(addBtn){
+        if(tab==='students'){ addBtn.textContent='➕ Add Student'; addBtn.onclick=openAddStudentModal; }
+        else { addBtn.textContent='➕ Add Teacher'; addBtn.onclick=openAddTeacherModal; }
+      }
+    });
+  });
+
+  function filterByStatus() { renderStudentList(); }
+  function filterByCourse() { renderStudentList(); }
+
+  // Status tab switching
+  function setStatusTab(status, btn) {
+    document.getElementById('statusFilter').value = status;
+    document.querySelectorAll('.status-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderStudentList();
+  }
+
+  // Teacher table row: add profile button
+  const _origRenderTeacherList = typeof renderTeacherList !== 'undefined' ? renderTeacherList : null;
+</script>
+</body>
+</html>

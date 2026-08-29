@@ -1,0 +1,29 @@
+Computer Care Academy Management - Customization Summary
+
+Fixed and completed in this copy:
+1. Removed duplicate customization injection and kept one clean shared feature block.
+2. Added latest PDF syllabus defaults from All Computer Care Full Latest Syllabus 26-6-26.pdf.
+3. Teachers/admins can add new syllabus topics and remove old syllabus, topics, and subtopics.
+4. Students can review every syllabus topic and write feedback.
+5. Teachers/admins can rate reviews from 1/10 to 10/10.
+6. Notes page uses top sub-tabs: Notes and Syllabus & Reviews.
+7. Added global Grid/List view, search, status filter, and Individual/Group filter across management pages.
+8. Added responsive width, height, padding, margin, font, gap, flex, and grid improvements for desktop/mobile.
+9. Added visible, stable scrollbars for content and navigation.
+10. Added automatic fee notifications after the 10th date when fees are pending.
+11. Added birthday notifications for students and teachers on their birthday.
+12. Added syllabus topics/reviews to the data export layer and initial database.
+
+Verification:
+- js/app.js syntax: ok
+- js/data.js syntax: ok
+- Syllabus groups: 6
+- Syllabus topics: 54
+
+Run with: npm start
+Open: http://localhost:3000
+Latest fix for portal UI:
+- Teacher/admin syllabus tab has add topic, remove syllabus, remove topic, add subtopic, and remove subtopic buttons.
+- Student portal Notes & Syllabus now has a Syllabus Reviews sub-tab for student reviews.
+- Global search/status/type/view controls are forced into one single horizontal line with horizontal scroll when needed.
+- Button widths were corrected so topic/review controls do not stretch awkwardly on desktop or mobile.

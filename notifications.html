@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item active"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">🔔 Notifications</div>
+          <div class="page-subtitle">Emergency holidays, announcements & alerts for all students and teachers</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="notifications">
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">🔔</div><div class="stat-value" id="statNotifTotal">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">🏖️</div><div class="stat-value" id="statNotifHoliday">0</div><div class="stat-label">Holidays</div></div>
+        <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">🚨</div><div class="stat-value" id="statNotifUrgent">0</div><div class="stat-label">High Priority</div></div>
+        <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-icon">📬</div><div class="stat-value" id="statNotifUnread">0</div><div class="stat-label">Unread</div></div>
+      </div>
+
+      <!-- Create Notification Form (admin/teacher only) -->
+      <div class="glass-panel" id="notifForm">
+        <h4 style="margin-bottom:16px;color:var(--primary)">📢 Send New Notification</h4>
+        <div class="form-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Title *</label>
+            <input id="notifTitle" class="form-control" placeholder="e.g. Republic Day Holiday">
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Message *</label>
+            <textarea id="notifMessage" class="form-control" rows="3" placeholder="Detailed notification message..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select id="notifType" class="form-control">
+              <option value="Holiday">🏖️ Holiday</option>
+              <option value="Announcement">📢 Announcement</option>
+              <option value="Meeting">👔 Meeting</option>
+              <option value="Fee">💰 Fee Reminder</option>
+              <option value="Exam">📝 Exam / Test</option>
+              <option value="Event">🎉 Event</option>
+              <option value="Emergency">🚨 Emergency</option>
+              <option value="Other">📌 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Send To</label>
+            <select id="notifTarget" class="form-control">
+              <option value="all">👥 Everyone</option>
+              <option value="students">👨‍🎓 Students Only</option>
+              <option value="teachers">👨‍🏫 Teachers Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="notifPriority" class="form-control">
+              <option value="High">🔴 High</option>
+              <option value="Medium" selected>🟡 Medium</option>
+              <option value="Low">🟢 Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Effective Date</label>
+            <input type="date" id="notifDate" class="form-control">
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn btn-primary" onclick="saveNotification()">🔔 Send Notification</button>
+          <button class="btn btn-warning" onclick="generateFeeReminderNow()">💰 Generate Monthly 10th Fee Reminders</button>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm notif-filter-btn active" onclick="filterNotifs(this,'all')">All</button>
+          <button class="btn btn-sm btn-secondary notif-filter-btn" onclick="filterNotifs(this,'Holiday')">🏖️ Holiday</button>
+          <button class="btn btn-sm btn-secondary notif-filter-btn" onclick="filterNotifs(this,'Announcement')">📢 Announce</button>
+          <button class="btn btn-sm btn-secondary notif-filter-btn" onclick="filterNotifs(this,'Meeting')">👔 Meeting</button>
+          <button class="btn btn-sm btn-secondary notif-filter-btn" onclick="filterNotifs(this,'Fee')">💰 Fee</button>
+          <button class="btn btn-sm btn-secondary notif-filter-btn" onclick="filterNotifs(this,'Emergency')">🚨 Emergency</button>
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="markAllRead()">✅ Mark All Read</button>
+      </div>
+
+      <!-- Notifications List -->
+      <div id="notifList">
+        <div class="empty-state"><div class="loader"></div><p>Loading...</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/notifications.js?v=20260704g"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const d = document.getElementById('notifDate');
+    if(d) d.value = new Date().toISOString().slice(0,10);
+  });
+</script>
+</body>
+</html>

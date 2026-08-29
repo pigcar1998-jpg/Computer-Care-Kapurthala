@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inquiries - Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">&#128202;</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">&#128101;</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">&#128176;</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">&#128203;</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">&#128197;</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">&#128218;</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">&#128221;</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">&#128444;</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">&#128196;</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">&#128276;</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">&#9989;</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">&#128188;</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">&#127891;</span><span class="nav-label">Courses</span></a>
+      <a href="inquiries.html" class="nav-item active"><span class="nav-icon">&#128222;</span><span class="nav-label">Inquiries</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">&#128682; Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">&#9776;</button>
+        <div>
+          <div class="page-title">&#128222; Inquiries</div>
+          <div class="page-subtitle">Admission leads, follow-ups, conversions, and inquiry reports</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">&#127769;</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-primary" onclick="openInquiryModal()">&#10133; Add Inquiry</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-no-auto-enhance="true">
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">&#128222;</div><div class="stat-value" id="inqTotal">0</div><div class="stat-label">Total Inquiries</div></div>
+        <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">&#9203;</div><div class="stat-value" id="inqOpen">0</div><div class="stat-label">Open / Follow Up</div></div>
+        <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">&#9888;</div><div class="stat-value" id="inqDue">0</div><div class="stat-label">Due Today</div></div>
+        <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">&#9989;</div><div class="stat-value" id="inqConverted">0</div><div class="stat-label">Converted</div></div>
+      </div>
+
+      <div class="academy-filter-panel" id="inquiryFilters">
+        <div class="academy-filter-grid">
+          <div class="search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="search" id="inqSearch" class="form-control" placeholder="Search name, mobile, course, source, notes">
+          </div>
+          <select id="inqStatusFilter" class="form-control"></select>
+          <select id="inqGenderFilter" class="form-control">
+            <option value="All">All Gender</option><option value="Male">Boys / Male</option><option value="Female">Girls / Female</option><option value="Other">Other</option>
+          </select>
+          <select id="inqCourseFilter" class="form-control"></select>
+          <select id="inqBatchFilter" class="form-control"></select>
+          <select id="inqSourceFilter" class="form-control"></select>
+          <select id="inqPriorityFilter" class="form-control"></select>
+          <input type="date" id="inqDateFrom" class="form-control" title="Inquiry from">
+          <input type="date" id="inqDateTo" class="form-control" title="Inquiry to">
+          <input type="date" id="inqFollowFrom" class="form-control" title="Follow-up from">
+          <input type="date" id="inqFollowTo" class="form-control" title="Follow-up to">
+          <button class="btn btn-secondary filter-clear-btn" onclick="clearInquiryFilters()">Clear Filters</button>
+        </div>
+      </div>
+
+      <div class="academy-view-toolbar" id="inquiryViewToolbar">
+        <div class="academy-view-meta">
+          <span class="academy-record-count" id="inqRecordCount">0 records</span>
+          <span class="academy-view-label">Inquiry view</span>
+        </div>
+        <div class="academy-view-actions">
+          <div id="inqViewToggle"></div>
+          <button class="btn btn-sm btn-secondary" onclick="exportInquiries('csv')">&#128229; CSV</button>
+          <button class="btn btn-sm btn-secondary" onclick="exportInquiries('pdf')">&#128438; PDF</button>
+        </div>
+      </div>
+
+      <div id="inquiryGrid" class="inquiry-card-grid"></div>
+      <div class="glass-panel" id="inquiryListPanel" style="padding:0;display:none">
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Inquiry</th><th>Course</th><th>Follow Up</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="inquiryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="inquiryModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="inquiryModalTitle">Add Inquiry</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="inquiryForm">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Student Name *</label><input type="text" id="inq_name" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Gender</label><select id="inq_gender" class="form-control"><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Mobile *</label><input type="tel" id="inq_mobile" class="form-control" required></div>
+          <div class="form-group"><label class="form-label">Alternate Mobile</label><input type="tel" id="inq_altMobile" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" id="inq_email" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Guardian Name</label><input type="text" id="inq_guardianName" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Course</label><select id="inq_courseId" class="form-control"></select></div>
+          <div class="form-group"><label class="form-label">Batch</label><select id="inq_batchNo" class="form-control"></select></div>
+          <div class="form-group"><label class="form-label">Preferred Time</label><select id="inq_preferredTime" class="form-control"></select></div>
+          <div class="form-group"><label class="form-label">Preferred Days</label><select id="inq_preferredDays" class="form-control"></select></div>
+          <div class="form-group"><label class="form-label">Source</label><select id="inq_source" class="form-control"><option>Walk-in</option><option>Phone</option><option>WhatsApp</option><option>Friend</option><option>Online</option><option>Social Media</option><option>Public Website</option><option>Other</option></select></div>
+          <div class="form-group"><label class="form-label">Status</label><select id="inq_status" class="form-control"><option>Open</option><option>Follow Up</option><option>Demo Scheduled</option><option>Joined</option><option>Converted</option><option>Closed</option><option>Lost</option></select></div>
+          <div class="form-group"><label class="form-label">Priority</label><select id="inq_priority" class="form-control"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+          <div class="form-group"><label class="form-label">Inquiry Date</label><input type="date" id="inq_inquiryDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Follow-up Date</label><input type="date" id="inq_followUpDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Expected Join Date</label><input type="date" id="inq_expectedJoinDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Quoted Fees</label><input type="number" id="inq_quotedFees" class="form-control" min="0"></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Address</label><input type="text" id="inq_address" class="form-control"></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Notes</label><textarea id="inq_notes" class="form-control" rows="3"></textarea></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('inquiryForm').dispatchEvent(new Event('submit'))">&#128190; Save Inquiry</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/inquiries.js?v=20260704g"></script>
+</body>
+</html>

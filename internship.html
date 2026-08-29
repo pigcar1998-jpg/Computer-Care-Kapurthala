@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internships - Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+      <a href="internship.html" class="nav-item active"><span class="nav-icon">💼</span><span class="nav-label">Internships</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">💼 Internship Management</div>
+          <div class="page-subtitle">Track internship details, mentors, projects, certificates, import and export</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-primary" onclick="openInternshipModal()">➕ Add Internship</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="internship">
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-icon">💼</div><div class="stat-value" id="intTotal">0</div><div class="stat-label">Total Internships</div></div>
+        <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">▶️</div><div class="stat-value" id="intActive">0</div><div class="stat-label">Active</div></div>
+        <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">✅</div><div class="stat-value" id="intCompleted">0</div><div class="stat-label">Completed</div></div>
+        <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">🏅</div><div class="stat-value" id="intCertified">0</div><div class="stat-label">Certificates</div></div>
+      </div>
+
+      <div class="glass-panel">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <div class="search-wrapper" style="flex:1;min-width:220px">
+            <span class="search-icon">🔍</span>
+            <input id="internshipSearch" class="form-control" placeholder="Search student, program, mentor, project...">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="internshipStatusFilter" class="form-control" style="width:auto">
+              <option value="All">All Status</option>
+              <option>Planned</option>
+              <option>Active</option>
+              <option>Completed</option>
+              <option>On Hold</option>
+              <option>Cancelled</option>
+            </select>
+            <button class="btn btn-primary" onclick="openInternshipModal()">➕ Add</button>
+            <div class="dropdown">
+              <button class="btn btn-secondary" data-dropdown-trigger>📤 Export ▾</button>
+              <div class="dropdown-menu">
+                <button class="dropdown-item" onclick="exportInternships('csv')">CSV</button>
+                <button class="dropdown-item" onclick="exportInternships('json')">JSON</button>
+                <button class="dropdown-item" onclick="exportInternships('pdf')">PDF</button>
+                <button class="dropdown-item" onclick="exportInternships('xlsx')">Excel XLSX</button>
+              </div>
+            </div>
+            <div style="position:relative">
+              <input type="file" id="internshipImportFile" accept=".json,.csv,.xlsx,.xls" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+              <button class="btn btn-warning">📥 Import</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="padding:0">
+        <div class="table-container">
+          <table>
+            <thead><tr>
+              <th>Student</th><th>Program</th><th>Mentor</th><th>Dates</th>
+              <th>Project</th><th>Status</th><th>Certificate</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="internshipTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="internshipModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="internshipModalTitle">➕ Add Internship</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="internshipForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Student</label>
+            <select id="if_studentId" class="form-control"></select>
+          </div>
+          <div class="form-group"><label class="form-label">Program *</label><input id="if_program" class="form-control" required placeholder="e.g. Web Development Internship"></div>
+          <div class="form-group"><label class="form-label">Company / Department</label><input id="if_company" class="form-control" placeholder="Computer Care Lab"></div>
+          <div class="form-group">
+            <label class="form-label">Mentor / Teacher</label>
+            <select id="if_mentor" class="form-control"></select>
+          </div>
+          <div class="form-group"><label class="form-label">Start Date</label><input type="date" id="if_startDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">End Date</label><input type="date" id="if_endDate" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Duration</label><input id="if_duration" class="form-control" placeholder="2 Months"></div>
+          <div class="form-group"><label class="form-label">Hours</label><input type="number" id="if_hours" class="form-control" min="0"></div>
+          <div class="form-group"><label class="form-label">Stipend (₹)</label><input type="number" id="if_stipend" class="form-control" min="0"></div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="if_status" class="form-control">
+              <option>Planned</option><option selected>Active</option><option>Completed</option>
+              <option>On Hold</option><option>Cancelled</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Skills</label><input id="if_skills" class="form-control" placeholder="HTML, CSS, JavaScript"></div>
+          <div class="form-group"><label class="form-label">Project Title</label><input id="if_projectTitle" class="form-control"></div>
+          <div class="form-group"><label class="form-label">Project URL</label><input id="if_projectUrl" class="form-control" placeholder="https://..."></div>
+          <div class="form-group"><label class="form-label">Certificate No.</label><input id="if_certificateNo" class="form-control"></div>
+          <div class="form-group">
+            <label class="form-label">Evaluation</label>
+            <select id="if_evaluation" class="form-control">
+              <option value="">Not Evaluated</option><option>Excellent</option><option>Good</option><option>Average</option><option>Needs Improvement</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1"><label class="form-label">Remarks</label><textarea id="if_remarks" class="form-control" rows="3"></textarea></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('internshipForm').dispatchEvent(new Event('submit'))">💾 Save Internship</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/internship.js?v=20260704g"></script>
+</body>
+</html>

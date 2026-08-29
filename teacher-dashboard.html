@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Computer Care (Anubhav EduVista)</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text">
+        <h2>Computer Care</h2>
+        <p>Anubhav EduVista</p>
+      </div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item active"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications <span id="navNotifBadge" style="background:var(--danger);color:#fff;border-radius:999px;padding:1px 5px;font-size:0.65rem;font-weight:700;display:none">0</span></span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+      <span class="nav-section-title">Public</span>
+      <a href="public.html" class="nav-item" target="_blank"><span class="nav-icon">🌐</span><span class="nav-label">Public Website</span></a>
+      <a href="blog.html" class="nav-item" target="_blank"><span class="nav-icon">📰</span><span class="nav-label">Blog</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">
+        Computer Care (Anubhav EduVista)<br>
+        Near Landon Hotel, Kapurthala<br>
+        +91 78371-96514
+      </div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">📊 Dashboard</div>
+          <div class="page-subtitle">Welcome back! Here's your academy overview.</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-import btn-sm" onclick="ExcelImport.openImportModal()" style="display:flex;align-items:center;gap:6px">📥 Import Excel</button>
+          <div class="dropdown">
+          <button class="btn btn-ghost btn-sm" data-dropdown-trigger>⚙️</button>
+          <div class="dropdown-menu">
+            <a href="reports.html" class="dropdown-item">📄 Reports</a>
+            <a href="tasks.html" class="dropdown-item">✅ Tasks</a>
+            <a href="salary.html" class="dropdown-item">💼 Salary</a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" onclick="Auth.logout()">🚪 Logout</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="dashboard">
+      <!-- Multi-Dashboard Tabs -->
+      <div class="dashboard-tabs" id="dashboardTabs">
+        <button class="dashboard-tab active" onclick="switchDashboard('overview',this)">📊 Overview</button>
+        <button class="dashboard-tab" onclick="switchDashboard('students',this)">👨‍🎓 Students</button>
+        <button class="dashboard-tab" onclick="switchDashboard('fees',this)">💰 Fees</button>
+        <button class="dashboard-tab" onclick="switchDashboard('attendance',this)">📋 Attendance</button>
+        <button class="dashboard-tab" onclick="switchDashboard('teachers',this)">👨‍🏫 Teachers</button>
+        <button class="dashboard-tab" onclick="switchDashboard('courses',this)">🎓 Courses</button>
+      </div>
+
+      <!-- Birthday Banner Slot (auto-populated by BirthdayNotifier) -->
+
+      <!-- FULL ANALYSIS FILTERS -->
+      <div class="glass-panel">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <h3 class="section-title" style="margin:0">📊 Full Analysis Dashboard</h3>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="dashPeriodFilter" class="form-control" style="width:auto">
+              <option value="day">Today</option>
+              <option value="week">Last 7 Days</option>
+              <option value="month" selected>This Month</option>
+              <option value="year">This Year</option>
+            </select>
+            <select id="dashStatusFilter" class="form-control" style="width:auto;min-width:230px"></select>
+            <select id="dashGenderFilter" class="form-control" style="width:auto">
+              <option value="All">All Boys & Girls</option>
+              <option value="Male">Boys</option>
+              <option value="Female">Girls</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-icon">🆕</div><div class="stat-value" id="dashNewStudents">0</div><div class="stat-label">New Students</div></div>
+        <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">💵</div><div class="stat-value" id="dashPeriodPayments" style="font-size:1.45rem">₹0</div><div class="stat-label">Period Payments</div></div>
+        <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">🧾</div><div class="stat-value" id="dashPaymentEntries">0</div><div class="stat-label">Payment Entries</div></div>
+        <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">📋</div><div class="stat-value" id="dashAttendanceEntries">0</div><div class="stat-label">Attendance Entries</div></div>
+        <div class="stat-card" style="--card-color:var(--secondary)"><div class="stat-icon">📈</div><div class="stat-value" id="dashPresenceRate">0%</div><div class="stat-label">Presence Rate</div></div>
+        <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">⚠️</div><div class="stat-value" id="dashFilteredPending" style="font-size:1.45rem">₹0</div><div class="stat-label">Filtered Pending</div></div>
+        <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">👦</div><div class="stat-value" id="dashBoys">0</div><div class="stat-label">Boys</div></div>
+        <div class="stat-card" style="--card-color:var(--accent)"><div class="stat-icon">👧</div><div class="stat-value" id="dashGirls">0</div><div class="stat-label">Girls</div></div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">📈 Period Revenue Analysis</h4>
+          <div style="height:240px;position:relative"><canvas id="analysisPeriodChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">👦👧 Boys / Girls Analysis</h4>
+          <div style="height:240px;position:relative"><canvas id="genderChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="dash-two-col">
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:14px">🎓 Course Analysis Table</h3>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Course</th><th>Total</th><th>Boys</th><th>Girls</th><th>Paid</th><th>Pending</th></tr></thead>
+              <tbody id="courseAnalysisTbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:14px">🧾 Recent Entries</h3>
+          <div class="table-container">
+            <table>
+              <thead><tr><th>Type</th><th>Date</th><th>Student</th><th>Amount</th><th>Detail</th></tr></thead>
+              <tbody id="recentEntriesTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK STATS ROW 1: Students -->
+      <div>
+        <div class="section-header">
+          <h3 class="section-title">👨‍🎓 Course Analysis</h3>
+          <a href="students.html" class="btn btn-sm btn-secondary">View All →</a>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" style="--card-color:var(--info);--card-color-light:rgba(147,197,253,0.15)">
+            <div class="stat-card-header">
+              <div class="stat-icon">👥</div>
+              <span class="badge badge-info" style="font-size:0.65rem">All</span>
+            </div>
+            <div class="stat-value" id="statTotalStudents">0</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+          <div class="stat-card" style="--card-color:var(--warning);--card-color-light:rgba(251,191,36,0.15)">
+            <div class="stat-card-header"><div class="stat-icon">⏳</div></div>
+            <div class="stat-value" id="statPending">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-card" style="--card-color:var(--primary);--card-color-light:rgba(94,234,212,0.15)">
+            <div class="stat-card-header"><div class="stat-icon">▶️</div></div>
+            <div class="stat-value" id="statContinue">0</div>
+            <div class="stat-label">Continuing</div>
+          </div>
+          <div class="stat-card" style="--card-color:var(--success);--card-color-light:rgba(52,211,153,0.15)">
+            <div class="stat-card-header"><div class="stat-icon">✅</div></div>
+            <div class="stat-value" id="statComplete">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+          <div class="stat-card" style="--card-color:var(--warning);--card-color-light:rgba(251,191,36,0.12)">
+            <div class="stat-card-header"><div class="stat-icon">🏖️</div></div>
+            <div class="stat-value" id="statLeave">0</div>
+            <div class="stat-label">On Leave</div>
+          </div>
+          <div class="stat-card" style="--card-color:var(--danger);--card-color-light:rgba(251,113,133,0.12)">
+            <div class="stat-card-header"><div class="stat-icon">🚪</div></div>
+            <div class="stat-value" id="statLeft">0</div>
+            <div class="stat-label">Left</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS ROW 2: Fees + People -->
+      <div class="dash-two-col">
+        <div>
+          <div class="section-header"><h3 class="section-title">💰 Fees Dashboard</h3><a href="fees.html" class="btn btn-sm btn-secondary">Manage →</a></div>
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr">
+            <div class="stat-card" style="--card-color:var(--success)">
+              <div class="stat-icon">💵</div>
+              <div class="stat-value" style="font-size:1.4rem" id="statPaidFees">₹0</div>
+              <div class="stat-label">Collected</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--danger)">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-value" style="font-size:1.4rem" id="statPendingFees">₹0</div>
+              <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--info)">
+              <div class="stat-icon">📊</div>
+              <div class="stat-value" style="font-size:1.4rem" id="statTotalFees">₹0</div>
+              <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--accent)">
+              <div class="stat-icon">💎</div>
+              <div class="stat-value" style="font-size:1.4rem" id="statRevenue">₹0</div>
+              <div class="stat-label">Revenue</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-header"><h3 class="section-title">🏫 People & Courses</h3></div>
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr">
+            <div class="stat-card" style="--card-color:var(--secondary)">
+              <div class="stat-icon">👨‍🏫</div>
+              <div class="stat-value" id="statTotalTeachers">0</div>
+              <div class="stat-label">Teachers</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--primary)">
+              <div class="stat-icon">📚</div>
+              <div class="stat-value" id="statTotalCourses">0</div>
+              <div class="stat-label">Courses</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--success)">
+              <div class="stat-icon">✔️</div>
+              <div class="stat-value" id="statAttPresent">0</div>
+              <div class="stat-label">Present Today</div>
+            </div>
+            <div class="stat-card" style="--card-color:var(--danger)">
+              <div class="stat-icon">❌</div>
+              <div class="stat-value" id="statAttAbsent">0</div>
+              <div class="stat-label">Absent Today</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TODAY'S BIRTHDAYS PANEL -->
+      <div id="birthdayPanel" style="display:none">
+        <div class="glass-panel" style="border:1px solid rgba(251,191,36,0.3);background:rgba(251,191,36,0.05)">
+          <h3 class="section-title" style="margin-bottom:14px;color:#f59e0b">🎂 Today's Birthdays</h3>
+          <div id="birthdayList" style="display:flex;flex-wrap:wrap;gap:12px"></div>
+        </div>
+      </div>
+
+      <!-- PENDING TASKS PANEL -->
+      <div>
+        <div class="section-header">
+          <h3 class="section-title">✅ Pending Tasks</h3>
+          <a href="tasks.html" class="btn btn-sm btn-secondary">All Tasks →</a>
+        </div>
+        <div id="dashboardTasksPanel" class="glass-panel">
+          <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:1.8rem">✅</div><p>No pending tasks</p></div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">📊 Course Status Breakdown</h4>
+          <div style="height:220px;position:relative"><canvas id="courseStatusChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">💰 Fees Collection Status</h4>
+          <div style="height:220px;position:relative"><canvas id="feesChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">📚 Students per Course</h4>
+          <div style="height:220px;position:relative"><canvas id="courseDistChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h4 style="margin-bottom:16px;font-size:0.95rem">📈 Monthly Revenue</h4>
+          <div style="height:220px;position:relative"><canvas id="monthlyChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ACADEMY PROGRESS -->
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:20px">🏆 Academy Progress</h3>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px">
+              <span>Course Completion Rate</span><span id="pctComplete" style="color:var(--success);font-weight:700">0%</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressComplete" style="width:0%;background:linear-gradient(90deg,var(--success),#059669)"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px">
+              <span>Active Students</span><span id="pctContinue" style="color:var(--primary);font-weight:700">0%</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressContinue" style="width:0%"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px">
+              <span>Fees Collection Rate</span><span id="pctFees" style="color:var(--warning);font-weight:700">0%</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFees" style="width:0%;background:linear-gradient(90deg,var(--warning),#d97706)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT STUDENTS TABLE -->
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">👨‍🎓 Recent Students</h3>
+          <a href="students.html" class="btn btn-sm btn-primary">+ Add Student</a>
+        </div>
+        <div class="table-container">
+          <table id="studentTable">
+            <thead><tr>
+              <th>Student</th><th>Status</th><th>Batch</th>
+              <th>Paid</th><th>Balance</th><th>Action</th>
+            </tr></thead>
+            <tbody id="recentStudentsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NOTEPAD PANEL -->
+      <div class="glass-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <h3 class="section-title">📓 Quick Notepad</h3>
+          <span style="font-size:0.75rem;color:var(--text-muted)" id="notepadSaved">Auto-saves</span>
+        </div>
+        <textarea id="dashboardNotepad" class="form-control" rows="5"
+          placeholder="Jot down quick notes, reminders, lesson plans, meeting notes...&#10;This notepad is private to you and auto-saves."
+          style="font-size:0.88rem;line-height:1.7;resize:vertical"></textarea>
+      </div>
+
+      <!-- LATEST NOTIFICATIONS PANEL -->
+      <div>
+        <div class="section-header">
+          <h3 class="section-title">🔔 Latest Notifications</h3>
+          <a href="notifications.html" class="btn btn-sm btn-secondary">All Notifications →</a>
+        </div>
+        <div id="dashNotifPanel" class="glass-panel">
+          <div class="empty-state" style="padding:20px"><div class="empty-state-icon" style="font-size:1.8rem">🔔</div><p>No notifications</p></div>
+        </div>
+      </div>
+
+      <!-- QUICK LINKS -->
+      <div class="quick-links-grid">
+        <a href="students.html" class="quick-link-card"><div class="ql-icon">👥</div><div class="ql-label">Students</div></a>
+        <a href="fees.html" class="quick-link-card"><div class="ql-icon">💰</div><div class="ql-label">Fees</div></a>
+        <a href="attendance.html" class="quick-link-card"><div class="ql-icon">📋</div><div class="ql-label">Attendance</div></a>
+        <a href="timetable.html" class="quick-link-card"><div class="ql-icon">📅</div><div class="ql-label">Time Table</div></a>
+        <a href="topics.html" class="quick-link-card"><div class="ql-icon">📚</div><div class="ql-label">Topics</div></a>
+        <a href="teacher-notes.html" class="quick-link-card"><div class="ql-icon">📝</div><div class="ql-label">Notes</div></a>
+        <a href="notifications.html" class="quick-link-card"><div class="ql-icon">🔔</div><div class="ql-label">Notify</div></a>
+        <a href="gallery.html" class="quick-link-card"><div class="ql-icon">🖼️</div><div class="ql-label">Gallery</div></a>
+        <a href="tasks.html" class="quick-link-card"><div class="ql-icon">✅</div><div class="ql-label">Tasks</div></a>
+        <a href="salary.html" class="quick-link-card"><div class="ql-icon">💼</div><div class="ql-label">Salary</div></a>
+        <a href="reports.html" class="quick-link-card"><div class="ql-icon">📄</div><div class="ql-label">Reports</div></a>
+        <a href="backend.html" class="quick-link-card"><div class="ql-icon">🗄️</div><div class="ql-label">Backend DB</div></a>
+        <a href="courses.html" class="quick-link-card"><div class="ql-icon">🎓</div><div class="ql-label">Courses</div></a>
+        <a href="internship.html" class="quick-link-card"><div class="ql-icon">💼</div><div class="ql-label">Internships</div></a>
+        <a href="public.html" class="quick-link-card" target="_blank"><div class="ql-icon">🌐</div><div class="ql-label">Website</div></a>
+        <a href="blog.html" class="quick-link-card" target="_blank"><div class="ql-icon">📰</div><div class="ql-label">Blog</div></a>
+      </div>
+
+    </div><!-- end content-area -->
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/dashboard.js?v=20260704g"></script>
+<script>
+// Extra dashboard enhancements: birthday panel, pending tasks, notepad, notifications
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Notepad autosave
+  const session = Auth.getSession();
+  if (session) {
+    const notepadEl = document.getElementById('dashboardNotepad');
+    if (notepadEl) {
+      notepadEl.value = DB.getNotepad(session.id);
+      let saveTimer;
+      notepadEl.addEventListener('input', () => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          DB.saveNotepad(session.id, notepadEl.value);
+          const savedEl = document.getElementById('notepadSaved');
+          if (savedEl) { savedEl.textContent = '✅ Saved'; setTimeout(()=>savedEl.textContent='Auto-saves',2000); }
+        }, 800);
+      });
+    }
+
+    // Notification badge in nav
+    const unread = DB.getUnreadCount(session);
+    const badge = document.getElementById('navNotifBadge');
+    if (badge && unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; }
+
+    // Latest notifications panel
+    const notifPanel = document.getElementById('dashNotifPanel');
+    const notifs = DB.getNotifications().filter(n=>DB.notificationAppliesToSession(n, session)).slice(0,4);
+    if (notifPanel && notifs.length) {
+      const pColors = { High:'var(--danger)', Medium:'var(--warning)', Low:'var(--success)' };
+      notifPanel.innerHTML = notifs.map(n=>`
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--glass-border)">
+          <span style="font-size:1.4rem">${n.icon||'📌'}</span>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.88rem;display:flex;align-items:center;gap:8px">
+              ${n.title}
+              <span style="width:6px;height:6px;background:${pColors[n.priority]||'var(--primary)'};border-radius:50%;display:inline-block"></span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--text-muted)">${n.message.slice(0,100)}${n.message.length>100?'...':''}</div>
+          </div>
+          ${n.date?`<div style="font-size:0.72rem;color:var(--text-muted);white-space:nowrap">${n.date}</div>`:''}
+        </div>`).join('');
+    }
+  }
+
+  // Birthday panel
+  const birthdays = DB.getTodayBirthdays();
+  if (birthdays.length) {
+    const panel = document.getElementById('birthdayPanel');
+    const list  = document.getElementById('birthdayList');
+    if (panel) panel.style.display = '';
+    if (list) list.innerHTML = birthdays.map(b=>`
+      <div class="glass-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2)">
+        <div style="font-size:2rem">🎂</div>
+        <div>
+          <div style="font-weight:700">${b.name}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">${b.role==='teacher'?'👨‍🏫 Teacher':'👨‍🎓 Student'} &nbsp;|&nbsp; Age: ${Fmt.age(b.dob)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Pending tasks panel
+  const taskSession = Auth.getSession();
+  if (taskSession) {
+    const allTasks = DB.getTasks();
+    const myTasks = taskSession.role === 'admin'
+      ? allTasks.filter(t=>t.status==='Pending'||t.status==='In Progress')
+      : allTasks.filter(t=>(t.assignedTo===taskSession.id||t.createdBy===taskSession.id)&&(t.status==='Pending'||t.status==='In Progress'));
+
+    const panel = document.getElementById('dashboardTasksPanel');
+    if (panel && myTasks.length) {
+      const priorityColors={High:'var(--danger)',Medium:'var(--warning)',Low:'var(--success)'};
+      panel.innerHTML = myTasks.slice(0,5).map(task=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--glass-border)">
+          <div style="width:6px;height:6px;border-radius:50%;background:${priorityColors[task.priority]||'var(--primary)'}"></div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:0.88rem">${task.title}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted)">${task.assignedName||'General'} • Due: ${task.dueDate?Fmt.date(task.dueDate):'No date'}</div>
+          </div>
+          <span class="badge" style="background:${priorityColors[task.priority]||'var(--primary)'}22;color:${priorityColors[task.priority]||'var(--primary)'};font-size:0.7rem">${task.priority||'Medium'}</span>
+        </div>`).join('') +
+        (myTasks.length > 5 ? `<div style="text-align:center;padding:10px 0;font-size:0.82rem;color:var(--text-muted)"><a href="tasks.html" style="color:var(--primary)">View all ${myTasks.length} tasks →</a></div>` : '');
+    }
+  }
+});
+</script>
+<script src="js/excel-import.js?v=20260704g"></script>
+<script src="js/profiles.js?v=20260704g"></script>
+<script>
+// Multi-dashboard tab switching
+function switchDashboard(tab, btn) {
+  document.querySelectorAll('.dashboard-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  
+  // Show/hide sections based on tab
+  const all = document.querySelectorAll('[data-dash-section]');
+  all.forEach(el => el.style.display = 'none');
+  const target = document.querySelector('[data-dash-section="' + tab + '"]');
+  if (target) target.style.display = '';
+  
+  // Default: hide nothing for overview
+  if (tab === 'overview') all.forEach(el => el.style.display = '');
+}
+</script>
+</body>
+</html>

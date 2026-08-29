@@ -1,0 +1,17 @@
+{
+  "name": "computer-care-academy-management",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Computer Care academy management website with local JSON backend",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "optionalDependencies": {
+    "mongodb": "^6.16.0",
+    "mysql2": "^3.14.0"
+  }
+}

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="public-document">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Care (Anubhav EduVista) — Premier Computer Education in Kapurthala</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+<style>
+/* ===== PUBLIC PAGE STYLES ===== */
+.public-wrapper { min-height:100vh; background:var(--bg-main); color:var(--text-main); }
+
+/* Hero */
+.hero { min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(ellipse at 60% 40%,rgba(4,120,87,0.25) 0,transparent 65%),
+  radial-gradient(ellipse at 20% 70%,rgba(139,156,255,0.15) 0,transparent 60%),
+  var(--bg-main);
+  text-align:center; padding:80px 20px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23047857' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(4,120,87,0.15);
+  border:1px solid rgba(94,234,212,0.3); border-radius:999px; padding:8px 20px;
+  font-size:0.82rem; color:var(--primary); font-weight:600; margin-bottom:28px; }
+.hero h1 { font-size:clamp(2.4rem,6vw,4rem); font-weight:900; line-height:1.1;
+  background:linear-gradient(135deg,var(--primary),#34d399,var(--accent));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:20px; }
+.hero p { font-size:1.15rem; color:var(--text-muted); max-width:640px; margin:0 auto 36px; line-height:1.7; }
+.hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:50px; }
+.hero-stats { display:flex; gap:40px; justify-content:center; flex-wrap:wrap; }
+.hero-stat { text-align:center; }
+.hero-stat-val { font-size:2rem; font-weight:800; color:var(--primary); }
+.hero-stat-lab { font-size:0.78rem; color:var(--text-muted); }
+
+/* Sections */
+.pub-section { padding:80px 20px; max-width:1200px; margin:0 auto; }
+.section-label { font-size:0.8rem; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:2px; margin-bottom:12px; }
+.section-heading { font-size:clamp(1.8rem,4vw,2.6rem); font-weight:800; margin-bottom:16px; }
+.section-sub { color:var(--text-muted); font-size:1rem; max-width:560px; margin-bottom:40px; line-height:1.7; }
+
+/* Nav */
+.pub-nav { position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(10,10,20,0.85); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--glass-border); padding:0 24px; height:64px;
+  display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.pub-nav-brand { display:flex; align-items:center; gap:12px; }
+.pub-nav-brand-icon { width:38px; height:38px; background:linear-gradient(135deg,var(--primary),var(--secondary));
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:0.9rem; color:#fff; }
+.pub-nav-links { display:flex; gap:24px; }
+.pub-nav-links a { color:var(--text-muted); text-decoration:none; font-size:0.88rem; font-weight:500;
+  transition:color 0.2s; }
+.pub-nav-links a:hover { color:var(--primary); }
+.pub-nav-cta { display:flex; gap:10px; }
+
+/* Course cards */
+.course-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px;
+  padding:24px; transition:all 0.3s; cursor:default; }
+.course-card:hover { border-color:var(--primary); transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(4,120,87,0.15); }
+.course-icon { width:48px; height:48px; background:rgba(4,120,87,0.15); border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+  margin-bottom:14px; }
+.course-card h3 { font-size:1rem; font-weight:700; margin-bottom:8px; }
+.course-card .sub-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:12px; }
+.course-card .sub-tag { font-size:0.7rem; background:rgba(94,234,212,0.1); color:var(--primary);
+  border-radius:6px; padding:3px 8px; }
+.course-card .fee { font-size:1.1rem; font-weight:700; color:var(--primary); margin-top:12px; }
+
+/* Features */
+.feature-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px;
+  padding:28px; text-align:center; transition:all 0.3s; }
+.feature-card:hover { border-color:var(--primary); }
+.feature-icon { font-size:2.5rem; margin-bottom:14px; }
+.feature-card h3 { font-weight:700; margin-bottom:8px; }
+.feature-card p { color:var(--text-muted); font-size:0.88rem; line-height:1.6; }
+
+/* Blog */
+.blog-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px;
+  padding:24px; transition:all 0.3s; cursor:pointer; }
+.blog-card:hover { border-color:var(--primary); transform:translateY(-3px); }
+.blog-cat { font-size:0.72rem; font-weight:700; color:var(--primary); text-transform:uppercase;
+  letter-spacing:1px; margin-bottom:10px; }
+.blog-card h3 { font-size:1rem; font-weight:700; margin-bottom:8px; line-height:1.4; }
+.blog-card p { font-size:0.84rem; color:var(--text-muted); line-height:1.6; margin-bottom:14px; }
+.blog-meta { font-size:0.75rem; color:var(--text-muted); }
+
+/* Gallery */
+.gallery-thumb { width:100%; aspect-ratio:4/3; background:var(--glass-bg);
+  border-radius:12px; overflow:hidden; position:relative; cursor:pointer;
+  border:1px solid var(--glass-border); transition:all 0.3s; }
+.gallery-thumb:hover { border-color:var(--primary); transform:scale(1.02); }
+.gallery-thumb img { width:100%; height:100%; object-fit:cover; }
+.gallery-thumb-placeholder { width:100%; height:100%; display:flex; align-items:center;
+  justify-content:center; flex-direction:column; gap:8px; }
+
+/* Contact */
+.contact-card { background:var(--glass-bg); border:1px solid var(--glass-border);
+  border-radius:16px; padding:28px; display:flex; align-items:flex-start; gap:16px; }
+.contact-icon { width:44px; height:44px; background:rgba(4,120,87,0.15); border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+
+/* Footer */
+.pub-footer { background:rgba(0,0,0,0.3); border-top:1px solid var(--glass-border);
+  padding:40px 20px; text-align:center; }
+
+/* Grid layouts */
+.grid-2 { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
+.grid-3 { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+.grid-4 { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:20px; }
+.module-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:14px; }
+.module-tile { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:12px; overflow:hidden; min-height:126px; display:flex; flex-direction:column; transition:all 0.25s; }
+.module-tile:hover { transform:translateY(-3px); border-color:var(--primary); box-shadow:0 12px 30px rgba(4,120,87,0.16); }
+.module-icon { min-height:58px; display:grid; place-items:center; font-size:2rem; color:#fff; background:var(--tile-color,#047857); }
+.module-label { padding:12px 10px; text-align:center; font-size:0.82rem; font-weight:800; line-height:1.3; }
+.role-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:18px; }
+.role-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:12px; padding:16px; }
+.role-card strong { display:flex; align-items:center; gap:8px; color:var(--primary); margin-bottom:8px; }
+.role-card ul { margin-left:18px; color:var(--text-muted); font-size:0.82rem; line-height:1.7; }
+</style>
+</head>
+<body class="public-wrapper">
+
+<!-- Navigation -->
+<nav class="pub-nav" id="pubNav">
+  <div class="pub-nav-brand">
+    <div class="pub-nav-brand-icon">CC</div>
+    <div>
+      <div style="font-weight:800;font-size:0.95rem;color:var(--text-main)">Computer Care</div>
+      <div style="font-size:0.7rem;color:var(--text-muted)">Anubhav EduVista</div>
+    </div>
+  </div>
+  <div class="pub-nav-links" style="display:none" id="navLinks">
+    <a href="#courses">Courses</a>
+    <a href="#features">Why Us</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#blog">Blog</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="pub-nav-cta">
+    <a href="blog.html" class="btn btn-sm btn-secondary">📰 Blog</a>
+    <a href="index.html" class="btn btn-sm btn-primary">🔐 Login</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" style="padding-top:140px">
+  <div style="position:relative;z-index:1;max-width:800px;margin:0 auto">
+    <div class="hero-badge">⭐ Punjab's Premier Computer Education Institute</div>
+    <h1 id="heroTitle">Computer Care<br>Anubhav EduVista</h1>
+    <p id="heroSubtitle">Empowering students with cutting-edge computer skills in Kapurthala, Punjab. Join 500+ successful graduates who transformed their careers with us.</p>
+    <div class="hero-btns">
+      <a href="index.html" class="btn btn-primary" style="padding:14px 32px;font-size:1rem">🚀 Student / Teacher Login</a>
+      <a href="#courses" class="btn btn-secondary" style="padding:14px 32px;font-size:1rem">📚 Explore Courses</a>
+    </div>
+    <div class="hero-stats" id="heroStats">
+      <div class="hero-stat"><div class="hero-stat-val">500+</div><div class="hero-stat-lab">Students Trained</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">12+</div><div class="hero-stat-lab">Courses</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">5+</div><div class="hero-stat-lab">Years Experience</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">95%</div><div class="hero-stat-lab">Placement Rate</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- System Modules -->
+<section class="pub-section" id="modules">
+  <div class="section-label">Academy ERP</div>
+  <h2 class="section-heading">14 Core Management Modules</h2>
+  <p class="section-sub">A complete web-based academy system covering fees, attendance, timetable, learning content, reports, certificates, and profile management.</p>
+  <div class="module-grid">
+    <div class="module-tile" style="--tile-color:#16a34a"><div class="module-icon">₹</div><div class="module-label">Fees Management</div></div>
+    <div class="module-tile" style="--tile-color:#2563eb"><div class="module-icon">☑</div><div class="module-label">Attendance Register</div></div>
+    <div class="module-tile" style="--tile-color:#7c3aed"><div class="module-icon">◷</div><div class="module-label">Time Table</div></div>
+    <div class="module-tile" style="--tile-color:#ea580c"><div class="module-icon">📖</div><div class="module-label">Daily Topics</div></div>
+    <div class="module-tile" style="--tile-color:#0f766e"><div class="module-icon">▤</div><div class="module-label">Notes & Syllabus</div></div>
+    <div class="module-tile" style="--tile-color:#db2777"><div class="module-icon">▧</div><div class="module-label">Gallery</div></div>
+    <div class="module-tile" style="--tile-color:#4f46e5"><div class="module-icon">▮</div><div class="module-label">Reports</div></div>
+    <div class="module-tile" style="--tile-color:#ef4444"><div class="module-icon">☑</div><div class="module-label">Tasks</div></div>
+    <div class="module-tile" style="--tile-color:#0891b2"><div class="module-icon">$</div><div class="module-label">Salary</div></div>
+    <div class="module-tile" style="--tile-color:#16a34a"><div class="module-icon">◆</div><div class="module-label">Courses</div></div>
+    <div class="module-tile" style="--tile-color:#7c3aed"><div class="module-icon">▣</div><div class="module-label">Internship</div></div>
+    <div class="module-tile" style="--tile-color:#0284c7"><div class="module-icon">▤</div><div class="module-label">DMC</div></div>
+    <div class="module-tile" style="--tile-color:#a16207"><div class="module-icon">◉</div><div class="module-label">Certificate</div></div>
+    <div class="module-tile" style="--tile-color:#475569"><div class="module-icon">●</div><div class="module-label">Profile Details</div></div>
+  </div>
+  <div class="role-grid">
+    <div class="role-card"><strong>⚙ Admin</strong><ul><li>Full access</li><li>Manage all records</li><li>Reports, settings, backup</li></ul></div>
+    <div class="role-card"><strong>▣ Teacher</strong><ul><li>Mark attendance</li><li>Daily topics and notes</li><li>Tasks and reports</li></ul></div>
+    <div class="role-card"><strong>◉ Student</strong><ul><li>View attendance and fees</li><li>Download notes</li><li>Timetable, reports, certificate</li></ul></div>
+  </div>
+</section>
+
+<!-- Courses Section -->
+<section class="pub-section" id="courses">
+  <div class="section-label">What We Teach</div>
+  <h2 class="section-heading">Our Courses</h2>
+  <p class="section-sub">Choose from 12+ professionally designed courses taught by experienced faculty with real-world applications.</p>
+  <div class="grid-3" id="coursesGrid">
+    <div class="empty-state"><div class="loader"></div></div>
+  </div>
+</section>
+
+<!-- Features -->
+<section style="padding:80px 20px;background:rgba(4,120,87,0.04);border-top:1px solid var(--glass-border);border-bottom:1px solid var(--glass-border)" id="features">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-label">Why Choose Us</div>
+    <h2 class="section-heading">World-Class Education</h2>
+    <div class="grid-4">
+      <div class="feature-card"><div class="feature-icon">🖥️</div><h3>Modern Lab</h3><p>State-of-the-art computer lab with the latest hardware and licensed software for hands-on learning.</p></div>
+      <div class="feature-card"><div class="feature-icon">👨‍🏫</div><h3>Expert Faculty</h3><p>Experienced teachers with industry knowledge provide personalized attention to every student.</p></div>
+      <div class="feature-card"><div class="feature-icon">📜</div><h3>Certification</h3><p>Government-recognized certificates and professional diplomas accepted by employers nationwide.</p></div>
+      <div class="feature-card"><div class="feature-icon">💼</div><h3>Job Placement</h3><p>95% placement assistance with our network of employer partners across Punjab and beyond.</p></div>
+      <div class="feature-card"><div class="feature-icon">💰</div><h3>Affordable Fees</h3><p>Industry-competitive fees with easy EMI options. Education should not be a financial burden.</p></div>
+      <div class="feature-card"><div class="feature-icon">⏰</div><h3>Flexible Timings</h3><p>Morning, afternoon, and evening batches available. Learn at a time that suits your schedule.</p></div>
+      <div class="feature-card"><div class="feature-icon">🌐</div><h3>Freelancing Skills</h3><p>Practical training on freelancing platforms like Fiverr and Upwork to help you earn from anywhere.</p></div>
+      <div class="feature-card"><div class="feature-icon">🏆</div><h3>Award Winning</h3><p>Recognized as Best Computer Institute by District Education Board for excellence in computer education.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section class="pub-section" id="gallery">
+  <div class="section-label">Our Academy</div>
+  <h2 class="section-heading">Gallery</h2>
+  <p class="section-sub">Glimpses of our academy, events, student activities, and achievements.</p>
+  <div class="grid-3" id="publicGallery">
+    <!-- Placeholder cards -->
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">🖥️</div><div style="font-size:0.85rem;color:var(--text-muted)">Computer Lab</div></div></div>
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">🎓</div><div style="font-size:0.85rem;color:var(--text-muted)">Certificate Ceremony</div></div></div>
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">🏆</div><div style="font-size:0.85rem;color:var(--text-muted)">Award Function</div></div></div>
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">📸</div><div style="font-size:0.85rem;color:var(--text-muted)">Student Activities</div></div></div>
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">📚</div><div style="font-size:0.85rem;color:var(--text-muted)">Study Session</div></div></div>
+    <div class="gallery-thumb"><div class="gallery-thumb-placeholder"><div style="font-size:3rem">🎉</div><div style="font-size:0.85rem;color:var(--text-muted)">Annual Function</div></div></div>
+  </div>
+</section>
+
+<!-- Blog -->
+<section style="padding:80px 20px;background:rgba(0,0,0,0.2);border-top:1px solid var(--glass-border)" id="blog">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-label">Knowledge Hub</div>
+    <h2 class="section-heading">Latest from Our Blog</h2>
+    <div class="grid-3" id="publicBlog"></div>
+    <div style="text-align:center;margin-top:32px"><a href="blog.html" class="btn btn-secondary" style="padding:12px 28px">View All Posts →</a></div>
+  </div>
+</section>
+
+<!-- Notifications / Latest Updates -->
+<section class="pub-section" id="updates">
+  <div class="section-label">Stay Updated</div>
+  <h2 class="section-heading">Latest Announcements</h2>
+  <div id="publicNotifications"></div>
+</section>
+
+<!-- Contact -->
+<section style="padding:80px 20px;background:rgba(4,120,87,0.04);border-top:1px solid var(--glass-border)" id="contact">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-label">Get In Touch</div>
+    <h2 class="section-heading">Contact Us</h2>
+    <p class="section-sub">We'd love to hear from you. Visit us, call us, or email us anytime.</p>
+    <div class="grid-2">
+      <div class="contact-card"><div class="contact-icon">📍</div><div><strong>Address</strong><br><span style="color:var(--text-muted);font-size:0.9rem" id="pubAddress">Near Landon Hotel, Behind Jain Petrol Pump, Kapurthala, Punjab</span></div></div>
+      <div class="contact-card"><div class="contact-icon">📞</div><div><strong>Phone</strong><br><span style="color:var(--text-muted);font-size:0.9rem" id="pubMobile">+91 78371-96514</span></div></div>
+      <div class="contact-card"><div class="contact-icon">✉️</div><div><strong>Email</strong><br><span style="color:var(--text-muted);font-size:0.9rem" id="pubEmail">Anubhav.EduVista@gmail.com</span></div></div>
+      <div class="contact-card"><div class="contact-icon">🌐</div><div><strong>Website</strong><br><span style="color:var(--text-muted);font-size:0.9rem" id="pubWebsite">Computercareskpt.in</span></div></div>
+      <div class="contact-card" style="grid-column:1/-1"><div class="contact-icon">🕐</div><div><strong>Working Hours</strong><br><span style="color:var(--text-muted);font-size:0.9rem">Monday to Saturday: 9:00 AM – 6:00 PM<br>Sunday: By Appointment Only</span></div></div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center;margin-top:60px;padding:60px 40px;background:linear-gradient(135deg,rgba(4,120,87,0.15),rgba(139,156,255,0.1));border-radius:24px;border:1px solid rgba(94,234,212,0.2)">
+      <h2 style="font-size:2rem;font-weight:800;margin-bottom:14px">Ready to Start Your Journey?</h2>
+      <p style="color:var(--text-muted);margin-bottom:28px;font-size:1rem">Join hundreds of students who have transformed their careers with Computer Care.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+        <a href="index.html" class="btn btn-primary" style="padding:14px 32px;font-size:1rem">🚀 Login / Register</a>
+        <a href="tel:+917837196514" class="btn btn-secondary" style="padding:14px 32px;font-size:1rem">📞 Call Us Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="pub-footer">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-bottom:8px">Computer Care (Anubhav EduVista)</div>
+    <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px">Near Landon Hotel, Kapurthala, Punjab | +91 78371-96514</div>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;font-size:0.85rem;margin-bottom:20px">
+      <a href="#courses" style="color:var(--text-muted);text-decoration:none">Courses</a>
+      <a href="#gallery" style="color:var(--text-muted);text-decoration:none">Gallery</a>
+      <a href="blog.html" style="color:var(--text-muted);text-decoration:none">Blog</a>
+      <a href="#contact" style="color:var(--text-muted);text-decoration:none">Contact</a>
+      <a href="index.html" style="color:var(--text-muted);text-decoration:none">Login</a>
+    </div>
+    <div style="color:var(--text-muted);font-size:0.78rem">© 2024 Computer Care (Anubhav EduVista). All Rights Reserved.</div>
+  </div>
+</footer>
+
+<script src="js/data.js?v=20260704g"></script>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  DB.init();
+
+  // Show nav links on desktop
+  const nl = document.getElementById('navLinks');
+  if(nl && window.innerWidth > 768) nl.style.display = 'flex';
+
+  const settings = DB.getSettings();
+
+  // Update contact info
+  ['Address','Mobile','Email','Website'].forEach(f => {
+    const el = document.getElementById('pub'+f);
+    if(el && settings[f.toLowerCase()]) el.textContent = settings[f.toLowerCase()];
+  });
+
+  // Courses
+  const courses = DB.getCourses();
+  const icons = ['🖥️','🎨','🌐','💻','📊','📱','💡','🔧','🚀','📝','🗣️','🎓'];
+  const grid = document.getElementById('coursesGrid');
+  if(grid) {
+    grid.innerHTML = courses.map((c,i)=>`
+      <div class="course-card">
+        <div class="course-icon">${icons[i%icons.length]}</div>
+        <h3>${c.name}</h3>
+        <div style="font-size:0.82rem;color:var(--text-muted)">⏱ ${c.duration}</div>
+        <div class="sub-tags">${(c.subcategories||[]).map(s=>`<span class="sub-tag">${s}</span>`).join('')}</div>
+        <div class="fee">${settings.currency||'₹'}${(c.fees||0).toLocaleString('en-IN')}/course</div>
+      </div>`).join('');
+  }
+
+  // Blog
+  const posts = DB.getBlogPosts().slice(0,3);
+  const blogEl = document.getElementById('publicBlog');
+  if(blogEl) {
+    blogEl.innerHTML = posts.map(p=>`
+      <div class="blog-card" onclick="window.location='blog.html#${p.id}'">
+        <div class="blog-cat">${p.category}</div>
+        <h3>${p.title}</h3>
+        <p>${p.excerpt||p.content.slice(0,120)+'...'}</p>
+        <div class="blog-meta">✍️ ${p.author} &nbsp;|&nbsp; 📅 ${p.publishedAt} &nbsp;|&nbsp; 👁 ${p.views||0} views</div>
+      </div>`).join('') || '<div style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:40px">No blog posts yet</div>';
+  }
+
+  // Public Notifications (holiday/announcements)
+  const notifs = DB.getNotifications().filter(n=>n.target==='all').slice(0,5);
+  const nEl = document.getElementById('publicNotifications');
+  if(nEl) {
+    if(!notifs.length) {
+      nEl.innerHTML = '<div class="empty-state" style="padding:30px"><div class="empty-state-icon">📢</div><p>No announcements yet</p></div>';
+    } else {
+      const typeColors = { Holiday:'rgba(251,191,36,0.1)', Announcement:'rgba(94,234,212,0.1)', Event:'rgba(52,211,153,0.1)', Emergency:'rgba(251,113,133,0.15)' };
+      const borderColors = { Holiday:'rgba(251,191,36,0.3)', Announcement:'rgba(94,234,212,0.3)', Event:'rgba(52,211,153,0.3)', Emergency:'rgba(251,113,133,0.4)' };
+      nEl.innerHTML = notifs.map(n=>`
+        <div style="background:${typeColors[n.type]||'var(--glass-bg)'};border:1px solid ${borderColors[n.type]||'var(--glass-border)'};border-radius:12px;padding:16px 20px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start">
+          <div style="font-size:1.8rem">${n.icon||'📌'}</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px">${n.title}</div>
+            <div style="color:var(--text-muted);font-size:0.85rem">${n.message}</div>
+            ${n.date?`<div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px">📅 ${n.date}</div>`:''}
+          </div>
+        </div>`).join('');
+    }
+  }
+
+  // Gallery
+  const gallery = DB.getGallery();
+  if(gallery.length) {
+    const pubGal = document.getElementById('publicGallery');
+    if(pubGal) {
+      pubGal.innerHTML = gallery.slice(0,6).map(g=>`
+        <div class="gallery-thumb">
+          ${g.url ? `<img src="${g.url}" alt="${g.title||''}">` :
+          `<div class="gallery-thumb-placeholder"><div style="font-size:3rem">${g.category==='Activity'?'🎉':g.category==='Certificate'?'🏆':'🖼️'}</div><div style="font-size:0.85rem;color:var(--text-muted)">${g.title||g.category||'Photo'}</div></div>`}
+        </div>`).join('');
+    }
+  }
+});
+</script>
+</body>
+</html>

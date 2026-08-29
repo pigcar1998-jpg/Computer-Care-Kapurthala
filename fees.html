@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fees Management — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item active"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div><div class="page-title">💰 Fees Management</div><div class="page-subtitle">Track and manage all student fees</div></div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="fees">
+      <!-- Summary Cards -->
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--info)">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="feesTotalAll">₹0</div>
+          <div class="stat-label">Total Fees</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--success)">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="feesPaidAll">₹0</div>
+          <div class="stat-label">Collected</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--danger)">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="feesPendingAll">₹0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--warning)">
+          <div class="stat-icon">📊</div>
+          <div class="stat-value" id="feesCollectionRate">0%</div>
+          <div class="stat-label">Collection Rate</div>
+          <div class="progress-bar-wrap" style="margin-top:4px"><div class="progress-bar-fill" id="feesCollectionBar" style="width:0%;background:linear-gradient(90deg,var(--warning),#d97706)"></div></div>
+        </div>
+      </div>
+
+      <!-- All Students Fees Table -->
+      <div class="glass-panel" style="padding:0">
+        <div style="padding:18px 20px;border-bottom:1px solid var(--glass-border)">
+          <div class="section-header" style="margin:0">
+            <h3 class="section-title">📋 All Students Fees</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <select id="feeCourseStatusFilter" class="form-control" style="width:auto;min-width:230px"></select>
+              <button class="btn btn-sm btn-secondary" onclick="exportAllFees()">📤 Export</button>
+              <button class="btn btn-sm btn-primary" onclick="printAllReceipts()">🖨 Print All</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead><tr>
+              <th>Student</th><th>Course</th><th>Total</th><th>Paid</th>
+              <th>Balance</th><th>Progress</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="allFeesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Payment Panel -->
+      <div class="glass-panel" id="feesDetailPanel" style="display:none">
+        <h3 class="section-title" id="feeStudentName" style="margin-bottom:4px">Select a student</h3>
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">
+          <span id="feeStudentCourse">—</span> &nbsp;|&nbsp; Batch: <span id="feeStudentBatch">—</span>
+        </div>
+
+        <!-- Fee summary mini cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+          <div class="glass-card" style="text-align:center;padding:14px">
+            <div style="font-size:0.72rem;color:var(--text-muted)">Total</div>
+            <div style="font-size:1.2rem;font-weight:700" id="feeTotalAmt">₹0</div>
+          </div>
+          <div class="glass-card" style="text-align:center;padding:14px">
+            <div style="font-size:0.72rem;color:var(--text-muted)">Paid</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--success)" id="feePaidAmt">₹0</div>
+          </div>
+          <div class="glass-card" style="text-align:center;padding:14px">
+            <div style="font-size:0.72rem;color:var(--text-muted)">Balance</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--danger)" id="feeBalanceAmt">₹0</div>
+          </div>
+          <div class="glass-card" style="text-align:center;padding:14px">
+            <div style="font-size:0.72rem;color:var(--text-muted)">Pending</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--warning)" id="feePendingAmt">₹0</div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px">
+            <span>Payment Progress</span><span id="feeProgressPct" style="color:var(--primary);font-weight:700">0%</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:12px"><div class="progress-bar-fill" id="feeProgressBar" style="width:0%"></div></div>
+        </div>
+
+        <!-- Add Payment Form -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+          <div>
+            <h4 style="margin-bottom:14px;color:var(--primary)">💳 Record Payment</h4>
+            <form id="paymentForm">
+              <div class="form-grid" style="grid-template-columns:1fr 1fr">
+                <div class="form-group">
+                  <label class="form-label">Amount (₹) *</label>
+                  <input type="number" id="payAmount" class="form-control" placeholder="0" min="1" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Payment Mode</label>
+                  <select id="payMode" class="form-control">
+                    <option>Cash</option><option>UPI</option><option>Bank Transfer</option>
+                    <option>Cheque</option><option>Online</option>
+                    <option>Per Month</option><option>Per Week</option>
+                    <option>Per Year</option><option>Full Course</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Payment Date</label>
+                  <input type="date" id="payDate" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Note</label>
+                  <input type="text" id="payNote" class="form-control" placeholder="Optional note">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary w-full" style="margin-top:8px">✅ Record Payment</button>
+            </form>
+            <div style="margin-top:14px">
+              <label class="form-label">📝 Notes</label>
+              <textarea id="feeNotes" class="form-control" rows="3" placeholder="Any notes about fees..."></textarea>
+              <button class="btn btn-sm btn-secondary w-full" style="margin-top:8px" onclick="saveNotes()">💾 Save Notes</button>
+            </div>
+          </div>
+
+          <!-- Ledger -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <h4 style="color:var(--primary)">📜 Payment Ledger</h4>
+              <button class="btn btn-sm btn-ghost" onclick="printReceipt()">🖨 Print Receipt</button>
+            </div>
+            <div class="glass-card" style="padding:0;overflow:auto;max-height:340px" id="ledgerContainer">
+              <div class="empty-state"><div class="empty-state-icon">💳</div><p>No payments yet</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Selector -->
+      <div class="glass-panel">
+        <h4 style="margin-bottom:12px;color:var(--primary)">🔍 Select Student for Payment</h4>
+        <select id="feeStudentSelect" class="form-control" style="max-width:400px">
+          <option value="">-- Select a Student --</option>
+        </select>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/fees.js?v=20260704g"></script>
+<script>
+  function exportAllFees() {
+    const students = typeof getFilteredFeeStudents === 'function'
+      ? getFilteredFeeStudents()
+      : DB.getStudentsByCourseStatus(document.getElementById('feeCourseStatusFilter')?.value || 'Continue');
+    const headers = ['Student','Course','Total Fees','Paid','Balance','Status'];
+    const rows = students.map(s=>{
+      const paid=DB.paidFees(s.id); const bal=(s.totalFees||0)-paid;
+      return [s.name,s.course||'—',s.totalFees||0,paid,bal,bal<=0?'Cleared':'Pending'];
+    });
+    Exporter.toCSV(headers,rows,'fees-report.csv');
+    Toast.success('Exported!');
+  }
+  function printAllReceipts() {
+    Toast.info('Opening print for all receipts...');
+    const students = typeof getFilteredFeeStudents === 'function'
+      ? getFilteredFeeStudents()
+      : DB.getStudentsByCourseStatus(document.getElementById('feeCourseStatusFilter')?.value || 'Continue');
+    const settings=DB.getSettings();
+    const rows=students.map(s=>{const paid=DB.paidFees(s.id);const bal=(s.totalFees||0)-paid;
+      return `<tr><td>${s.name}</td><td>${s.course||'—'}</td><td>${Fmt.currency(s.totalFees||0)}</td><td>${Fmt.currency(paid)}</td><td style="color:${bal>0?'red':'green'}">${Fmt.currency(bal)}</td></tr>`;
+    }).join('');
+    Exporter.toPDF_simple('All Fees Report',`<h2>Fees Summary Report</h2><p>Generated: ${new Date().toLocaleDateString()}</p><table><thead><tr><th>Student</th><th>Course</th><th>Total</th><th>Paid</th><th>Balance</th></tr></thead><tbody>${rows}</tbody></table>`);
+  }
+
+  // Set today as default payment date
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const pd=document.getElementById('payDate');
+    if(pd) pd.value=new Date().toISOString().slice(0,10);
+  });
+</script>
+</body>
+</html>

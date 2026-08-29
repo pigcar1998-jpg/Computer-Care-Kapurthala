@@ -1,0 +1,86 @@
+COMPUTER CARE ACADEMY — EXCEL IMPORT MASTER GUIDE
+===================================================
+
+HOW TO IMPORT DATA:
+1. Open any page (Students, Reports, etc.)
+2. Click the green "📥 Import Excel" button
+3. Drop your .xlsx file or browse for it
+4. Wait for the import to complete
+
+SHEET NAMES (must be exact):
+- Students
+- Teachers
+- Fees
+- Salary
+- Topics
+- Tasks
+- Internships
+- Courses
+- Notifications
+
+STUDENTS SHEET COLUMNS:
+Name | Father Name | Mother Name | Gender | DOB | Mobile | Alt Mobile | Email | Aadhaar
+Qualification | Religion | Caste | Marital Status | Family Members | Annual Income
+Father Occupation | Mother Occupation | Address | Landmark | Village | District | Pincode | State
+Course | Course ID | Batch | Device | Timings | Day | Total Fees | Monthly Fees | Duration
+Admission Date | Status | Username | Password | Grade | Percentage | Rank | Reference
+Occupation | Experience | Feedback | Resign No
+
+TEACHERS SHEET COLUMNS:
+Name | Qualification | Subject | Mobile | Email | Gender | DOB | Join Date | Salary
+Performance | Active | Address | Username | Password
+
+FEES SHEET COLUMNS:
+Student ID | Student | Date | Amount | Mode | Receipt No | Note
+
+SALARY SHEET COLUMNS:
+Teacher ID | Teacher | Base Salary | Date | Amount | Mode | Note
+
+TOPICS SHEET COLUMNS:
+Title | Course | Teacher | Date | Time | Description | Status | Student | Student ID
+
+TASKS SHEET COLUMNS:
+Title | Assigned To | Status | Priority | Due Date | Description
+
+INTERNSHIPS SHEET COLUMNS:
+Student | Student ID | Program | Company | Mentor | Start Date | End Date | Hours | Status | Project | Description
+
+COURSES SHEET COLUMNS:
+Name | Duration | Fees | Subcategories
+
+NOTIFICATIONS SHEET COLUMNS:
+Title | Type | Target | Date | Priority | Message
+
+MATCHING RULES:
+- Students matched by Mobile number (updates existing, adds new)
+- Teachers matched by Name or Mobile (updates existing, adds new)
+- Fees/Salary: always appended as new payments
+- Topics/Tasks/Internships: always added as new records
+
+DATE FORMAT: YYYY-MM-DD (e.g. 2024-06-15)
+COURSE STATUS VALUES: Pending | Continue | Complete | Leave | Left
+EXISTING ACADEMY WORKBOOK BACKUP / RESTORE
+===========================================
+
+The supplied workbook "All Computer Care Academy Systems 2022-2027(Record and
+Time Table).xlsx" can now be imported directly. No header renaming is needed.
+
+Supported established tabs:
+  - Student's Record (all 23 original columns, including Registration Number)
+  - Teacher's Record
+
+To restore: sign in as an Admin or Teacher, open Students or Reports, choose
+Import from Excel, then select the workbook. Existing people are updated by
+mobile number/name; new records are added. Student accounts are view/download
+only. Teachers and admins can edit records.
+
+To back up: choose Export Master Excel. The resulting workbook contains the
+original-compatible Student's Record and Teacher's Record tabs first, plus the
+website's optional data tabs (fees, attendance, timetable, notes, etc.).
+
+Original column order for Student's Record:
+Sr. No | Registration Number | Students Name | Father Name | Date of Birth |
+Gender | Mobile Number | Alternative Mobile Number | Aadhar Card Number |
+Duration | Status | Course Name | Additional Course | Qualification | Email ID |
+Admission Date | Ending Date | Batch Timing | Address | Pending Days & Months |
+Fees | Certificate | DMC

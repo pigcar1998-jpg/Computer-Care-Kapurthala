@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Student Portal</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">My Portal</span>
+      <a href="#" class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span><span class="nav-label">My Dashboard</span></a>
+      <a href="#" class="nav-item" onclick="showSection('fees')"><span class="nav-icon">💰</span><span class="nav-label">My Fees</span></a>
+      <a href="#" class="nav-item" onclick="showSection('courses')"><span class="nav-icon">🎓</span><span class="nav-label">My Course</span></a>
+      <a href="#" class="nav-item" onclick="showSection('attendance')"><span class="nav-icon">📋</span><span class="nav-label">My Attendance</span></a>
+      <a href="#" class="nav-item" onclick="showSection('timetable')"><span class="nav-icon">📅</span><span class="nav-label">My Time Table</span></a>
+      <a href="#" class="nav-item" onclick="showSection('topics')"><span class="nav-icon">📚</span><span class="nav-label">My Topics</span></a>
+      <a href="#" class="nav-item" onclick="showSection('tasks')"><span class="nav-icon">✅</span><span class="nav-label">My Tasks</span></a>
+      <a href="#" class="nav-item" onclick="showSection('inquiries')"><span class="nav-icon">&#128222;</span><span class="nav-label">My Inquiries</span></a>
+      <a href="#" class="nav-item" onclick="showSection('internships')"><span class="nav-icon">&#128188;</span><span class="nav-label">My Internships</span></a>
+      <a href="#" class="nav-item" onclick="showSection('notes')"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="#" class="nav-item" onclick="showSection('notifications')"><span class="nav-icon">🔔</span><span class="nav-label">Notifications <span id="sNavBadge" style="background:var(--danger);color:#fff;border-radius:999px;padding:1px 5px;font-size:0.62rem;font-weight:700;display:none">0</span></span></a>
+      <a href="#" class="nav-item" onclick="showSection('notepad')"><span class="nav-icon">📓</span><span class="nav-label">My Notepad</span></a>
+      <a href="#" class="nav-item" onclick="showSection('resume')"><span class="nav-icon">📄</span><span class="nav-label">My Resume</span></a>
+      <a href="#" class="nav-item" onclick="showSection('gallery')"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="#" class="nav-item" onclick="showSection('settings')"><span class="nav-icon">&#9881;</span><span class="nav-label">My Settings</span></a>
+      <span class="nav-section-title">Academy</span>
+      <a href="public.html" class="nav-item" target="_blank"><span class="nav-icon">🌐</span><span class="nav-label">Academy Website</span></a>
+      <a href="blog.html" class="nav-item" target="_blank"><span class="nav-icon">📰</span><span class="nav-label">Blog</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">
+        Computer Care (Anubhav EduVista)<br>
+        Near Landon Hotel, Kapurthala<br>
+        +91 78371-96514
+      </div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title" id="portalPageTitle">📊 My Dashboard</div>
+          <div class="page-subtitle" id="portalPageSubtitle">Welcome to your student portal</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-danger btn-sm" onclick="Auth.logout()">🚪 Logout</button>
+      </div>
+    </header>
+
+    <!-- ===== DASHBOARD SECTION ===== -->
+    <div class="content-area" id="sec-dashboard">
+      <div id="studentProfileHeader" class="glass-panel" style="padding:20px"></div>
+      <div class="stats-grid" id="studentStatCards"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+        <div class="chart-container">
+          <h4 style="margin-bottom:12px;font-size:0.9rem">💰 Fees Status</h4>
+          <div style="height:180px;position:relative"><canvas id="studentFeesChart"></canvas></div>
+        </div>
+        <div class="chart-container">
+          <h4 style="margin-bottom:12px;font-size:0.9rem">📋 Attendance</h4>
+          <div style="height:180px;position:relative"><canvas id="studentAttChart"></canvas></div>
+        </div>
+      </div>
+      <div class="glass-panel" id="studentTTSection">
+        <h3 class="section-title" style="margin-bottom:16px">📅 My Time Table</h3>
+        <div id="studentTTMini" style="overflow-x:auto"></div>
+      </div>
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">Portal Overview</h3>
+          <span class="academy-view-label">Read-only student data</span>
+        </div>
+        <div id="studentPortalOverview" class="dashboard-card-grid"></div>
+      </div>
+    </div>
+
+    <!-- ===== FEES SECTION ===== -->
+    <div class="content-area" id="sec-fees" style="display:none">
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:16px">💰 My Fees Ledger</h3>
+        <div id="studentFeesPanel"></div>
+      </div>
+      <div class="glass-panel" id="studentReceiptPanel">
+        <div class="section-header">
+          <h3 class="section-title">🧾 Payment Receipts</h3>
+          <button class="btn btn-sm btn-success" onclick="downloadAllReceipts()">⬇️ Download All</button>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px">Download official fee receipts for each payment.</p>
+        <div id="studentReceiptList"></div>
+      </div>
+    </div>
+
+    <!-- ===== COURSES SECTION ===== -->
+    <div class="content-area" id="sec-courses" style="display:none">
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:16px">🎓 My Course Details</h3>
+        <div id="studentCoursesPanel"></div>
+      </div>
+    </div>
+
+    <!-- ===== ATTENDANCE SECTION ===== -->
+    <div class="content-area" id="sec-attendance" style="display:none">
+      <div class="glass-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <h3 class="section-title">📋 My Attendance History</h3>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:0.82rem;color:var(--text-muted)">Month:</label>
+            <input type="month" id="studentAttMonth" class="form-control" style="width:auto" onchange="renderStudentAttendance()">
+          </div>
+        </div>
+        <div id="studentAttPanel"></div>
+      </div>
+    </div>
+
+    <!-- ===== TIMETABLE SECTION ===== -->
+    <div class="content-area" id="sec-timetable" style="display:none">
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">💻 My PC / Laptop Time Table</h3>
+          <button class="btn btn-sm btn-success" onclick="downloadStudentTimetable()">⬇️ Download PDF</button>
+        </div>
+        <div id="studentTTPanel" style="overflow-x:auto"></div>
+      </div>
+    </div>
+
+    <!-- ===== TOPICS SECTION ===== -->
+    <div class="content-area" id="sec-topics" style="display:none">
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:16px">📚 My Course Topics</h3>
+        <div id="studentTopicsPanel"></div>
+      </div>
+    </div>
+
+    <!-- ===== TASKS SECTION ===== -->
+    <div class="content-area" id="sec-tasks" style="display:none">
+      <div class="glass-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <h3 class="section-title">✅ My Tasks</h3>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-sm task-tab-btn active" data-filter="all" onclick="filterStudentTasksTab(this)">All</button>
+            <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="Pending" onclick="filterStudentTasksTab(this)">⏳ Pending</button>
+            <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="In Progress" onclick="filterStudentTasksTab(this)">▶ In Progress</button>
+            <button class="btn btn-sm btn-secondary task-tab-btn" data-filter="Completed" onclick="filterStudentTasksTab(this)">✅ Done</button>
+          </div>
+        </div>
+        <div id="studentTasksPanel"></div>
+      </div>
+    </div>
+
+    <!-- ===== RESUME SECTION ===== -->
+    <div class="content-area" id="sec-resume" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+        <!-- Resume Builder Form -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">📄 Resume Builder</h3>
+          <div data-tabs>
+            <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+              <button class="tab-btn btn btn-sm active" data-tab="tab-personal">👤 Personal</button>
+              <button class="tab-btn btn btn-sm btn-secondary" data-tab="tab-skills">🛠 Skills</button>
+              <button class="tab-btn btn btn-sm btn-secondary" data-tab="tab-education">🎓 Education</button>
+              <button class="tab-btn btn btn-sm btn-secondary" data-tab="tab-projects">💼 Projects</button>
+              <button class="tab-btn btn btn-sm btn-secondary" data-tab="tab-objective">📝 Objective</button>
+            </div>
+
+            <div class="tab-pane active" id="tab-personal">
+              <div class="form-group"><label class="form-label">Full Name</label><input id="rName" class="form-control" placeholder="Your full name"></div>
+              <div class="form-group"><label class="form-label">Email</label><input id="rEmail" class="form-control" type="email" placeholder="your@email.com"></div>
+              <div class="form-group"><label class="form-label">Mobile</label><input id="rMobile" class="form-control" placeholder="+91 XXXXX XXXXX"></div>
+              <div class="form-group"><label class="form-label">Address</label><input id="rAddress" class="form-control" placeholder="City, State"></div>
+              <div class="form-group"><label class="form-label">LinkedIn / GitHub / Portfolio URL</label><input id="rLinkedin" class="form-control" placeholder="https://..."></div>
+            </div>
+
+            <div class="tab-pane" id="tab-skills">
+              <div class="form-group">
+                <label class="form-label">Technical Skills <span style="font-size:0.75rem;color:var(--text-muted)">(comma separated)</span></label>
+                <textarea id="rSkillsTech" class="form-control" rows="3" placeholder="MS Word, Excel, Photoshop, Python, HTML, CSS..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soft Skills <span style="font-size:0.75rem;color:var(--text-muted)">(comma separated)</span></label>
+                <textarea id="rSkillsSoft" class="form-control" rows="2" placeholder="Communication, Team Work, Problem Solving..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Languages Known</label>
+                <input id="rLanguages" class="form-control" placeholder="Punjabi, Hindi, English">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Hobbies / Interests</label>
+                <input id="rHobbies" class="form-control" placeholder="Reading, Coding, Photography...">
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-education">
+              <div class="form-group">
+                <label class="form-label">Education (one per line: Degree | School | Year | %)</label>
+                <textarea id="rEducation" class="form-control" rows="5" placeholder="B.Sc Computer Science | ABC College | 2022 | 78%
+12th | XYZ School | 2019 | 85%
+Computer Care Course | Graphic Designing | 2024 | A Grade"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Certifications</label>
+                <textarea id="rCertifications" class="form-control" rows="3" placeholder="Certificate of Completion — Graphic Designing, 2024
+MS-CIT Certificate, 2023"></textarea>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-projects">
+              <div class="form-group">
+                <label class="form-label">Projects (one per line: Name | Description | Tech Used)</label>
+                <textarea id="rProjects" class="form-control" rows="6" placeholder="Portfolio Website | Personal portfolio | HTML, CSS, JS
+Logo Design Project | Created 5 brand logos | Photoshop, CorelDraw"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Work Experience / Internship</label>
+                <textarea id="rExperience" class="form-control" rows="3" placeholder="Web Developer Intern | XYZ Company | June 2024 - Aug 2024"></textarea>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="tab-objective">
+              <div class="form-group">
+                <label class="form-label">Career Objective / Summary</label>
+                <textarea id="rObjective" class="form-control" rows="5" placeholder="A motivated and skilled computer professional seeking an opportunity to utilize my technical skills in Graphic Designing and Web Development to contribute to organizational growth..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Declaration</label>
+                <textarea id="rDeclaration" class="form-control" rows="3" placeholder="I hereby declare that the above information is true and correct to the best of my knowledge."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="saveResume()">💾 Save Resume</button>
+            <button class="btn btn-success" onclick="downloadResume()">🖨️ Download / Print</button>
+          </div>
+        </div>
+
+        <!-- Resume Preview -->
+        <div>
+          <div class="glass-panel" style="padding:0;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center">
+              <h4 style="color:var(--primary);margin:0">👁️ Preview</h4>
+              <button class="btn btn-sm btn-success" onclick="downloadResume()">🖨️ Print / PDF</button>
+            </div>
+            <div id="resumePreview" style="padding:20px;font-size:0.82rem;line-height:1.6;min-height:300px">
+              <div class="empty-state" style="padding:40px">
+                <div class="empty-state-icon">📄</div>
+                <p>Fill in your details and save to preview your resume</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NOTIFICATIONS SECTION ===== -->
+    <div class="content-area" id="sec-notifications" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div><h3 class="section-title">🔔 Notifications & Announcements</h3></div>
+        <button class="btn btn-sm btn-secondary" onclick="sMarkAllNotifsRead()">✅ Mark All Read</button>
+      </div>
+      <div id="studentNotifList">
+        <div class="empty-state"><div class="loader"></div></div>
+      </div>
+    </div>
+
+    <!-- ===== NOTES & SYLLABUS SECTION (from teachers) ===== -->
+    <div class="content-area" id="sec-notes" style="display:none">
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:16px">📝 Notes & Syllabus from Teachers</h3>
+        <div class="notes-filter-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+          <button class="btn btn-sm active s-notes-filter" onclick="filterStudentNotes(this,'all')">All</button>
+          <button class="btn btn-sm btn-secondary s-notes-filter" onclick="filterStudentNotes(this,'Notes')">📝 Notes</button>
+          <button class="btn btn-sm btn-secondary s-notes-filter" onclick="filterStudentNotes(this,'Syllabus')">📋 Syllabus</button>
+          <button class="btn btn-sm btn-secondary s-notes-filter" onclick="filterStudentNotes(this,'Assignment')">📌 Assignment</button>
+          <button class="btn btn-sm btn-secondary s-notes-filter" onclick="filterStudentNotes(this,'Tutorial')">📖 Tutorial</button>
+          <button class="btn btn-sm btn-secondary s-notes-filter" onclick="filterStudentNotes(this,'Practice Sheet')">🗒️ Practice</button>
+        </div>
+        <div id="studentNotesList">
+          <div class="empty-state"><div class="loader"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NOTEPAD SECTION ===== -->
+    <div class="content-area" id="sec-notepad" style="display:none">
+      <div class="glass-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h3 class="section-title">📓 My Personal Notepad</h3>
+          <span style="font-size:0.75rem;color:var(--text-muted)" id="studentNotepadStatus">Auto-saves as you type</span>
+        </div>
+        <textarea id="studentNotepad" class="form-control" rows="16"
+          placeholder="Use this space for your personal notes, study plans, important points, homework reminders, goals...&#10;&#10;This notepad is private and auto-saves automatically."
+          style="font-size:0.9rem;line-height:1.8;resize:vertical;font-family:inherit"></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-sm btn-primary" onclick="exportStudentNotepad()">📄 Export as Text</button>
+          <button class="btn btn-sm btn-secondary" onclick="printStudentNotepad()">🖨️ Print</button>
+          <button class="btn btn-sm btn-danger" onclick="if(confirm('Clear all notes?')){document.getElementById('studentNotepad').value='';DB.saveNotepad(currentStudent.id,'');Toast.info('Notepad cleared');}">🗑 Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS SECTION ===== -->
+    <div class="content-area" id="sec-settings" style="display:none">
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">My Settings</h3>
+          <span class="academy-view-label">Student account controls</span>
+        </div>
+        <div id="studentSettingsPanel"></div>
+      </div>
+    </div>
+
+    <!-- ===== INQUIRIES SECTION ===== -->
+    <div class="content-area" id="sec-inquiries" style="display:none">
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">My Admission Inquiries</h3>
+          <span class="text-muted">Read-only records from the teacher/admin portal</span>
+        </div>
+        <div class="academy-filter-panel">
+          <div class="academy-filter-grid">
+            <div class="search-wrapper">
+              <span class="search-icon">&#128269;</span>
+              <input id="studentInquirySearch" class="form-control" type="search" placeholder="Search inquiry, course, notes">
+            </div>
+            <select id="studentInquiryStatusFilter" class="form-control">
+              <option value="All">All Status</option>
+              <option>Open</option>
+              <option>Follow Up</option>
+              <option>Demo Scheduled</option>
+              <option>Joined</option>
+              <option>Converted</option>
+              <option>Closed</option>
+              <option>Lost</option>
+            </select>
+            <button type="button" class="btn btn-secondary filter-clear-btn" onclick="clearStudentInquiryFilters()">Clear Filters</button>
+          </div>
+        </div>
+      </div>
+      <div class="academy-view-toolbar">
+        <div class="academy-view-meta">
+          <span class="academy-record-count" id="studentInquiryCount">0 records</span>
+          <span class="academy-view-label">Inquiry view</span>
+        </div>
+        <div class="academy-view-actions"><div id="studentInquiryViewToggle"></div></div>
+      </div>
+      <div id="studentInquiryGrid" class="inquiry-card-grid student-readonly-grid"></div>
+      <div class="glass-panel" id="studentInquiryListPanel" style="padding:0;display:none">
+        <div class="table-container student-big-scroll">
+          <table>
+            <thead><tr><th>Inquiry</th><th>Course</th><th>Follow Up</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="studentInquiryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INTERNSHIPS SECTION ===== -->
+    <div class="content-area" id="sec-internships" style="display:none">
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">My Internship Records</h3>
+          <span class="text-muted">Read-only status, project, mentor, and certificate details</span>
+        </div>
+        <div class="academy-filter-panel">
+          <div class="academy-filter-grid">
+            <div class="search-wrapper">
+              <span class="search-icon">&#128269;</span>
+              <input id="studentInternshipSearch" class="form-control" type="search" placeholder="Search program, mentor, project, skills">
+            </div>
+            <select id="studentInternshipStatusFilter" class="form-control">
+              <option value="All">All Status</option>
+              <option>Planned</option>
+              <option>Active</option>
+              <option>Completed</option>
+              <option>On Hold</option>
+              <option>Cancelled</option>
+            </select>
+            <button type="button" class="btn btn-secondary filter-clear-btn" onclick="clearStudentInternshipFilters()">Clear Filters</button>
+          </div>
+        </div>
+      </div>
+      <div class="academy-view-toolbar">
+        <div class="academy-view-meta">
+          <span class="academy-record-count" id="studentInternshipCount">0 records</span>
+          <span class="academy-view-label">Internship view</span>
+        </div>
+        <div class="academy-view-actions"><div id="studentInternshipViewToggle"></div></div>
+      </div>
+      <div id="studentInternshipGrid" class="internship-card-grid student-readonly-grid"></div>
+      <div class="glass-panel" id="studentInternshipListPanel" style="padding:0;display:none">
+        <div class="table-container student-big-scroll">
+          <table>
+            <thead><tr><th>Program</th><th>Mentor</th><th>Dates</th><th>Project</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="studentInternshipTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== GALLERY SECTION ===== -->
+    <div class="content-area" id="sec-gallery" style="display:none">
+      <h3 class="section-title" style="margin-bottom:16px">🖼️ Academy Gallery</h3>
+      <div class="gallery-grid" id="studentGalleryGrid"></div>
+    </div>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="studentRecordModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h3 class="modal-title" id="studentRecordModalTitle">Details</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="studentRecordModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script>
+let currentStudent = null;
+let currentSection = 'dashboard';
+let studentTaskFilter = 'all';
+let studentInquiryViewMode = AcademyView ? AcademyView.get('student_inquiries', 'grid') : 'grid';
+let studentInternshipViewMode = AcademyView ? AcademyView.get('student_internships', 'grid') : 'grid';
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const session = Auth.requireAuth(['student']);
+  if (!session) return;
+
+  const students = DB.getStudents();
+  currentStudent = students.find(s=>s.id===session.id || s.username===session.username);
+  if (!currentStudent) { Toast.error('Student profile not found'); return; }
+
+  renderPortalDashboard();
+  renderStudentAttendance();
+  loadSavedResume();
+  bindStudentPortalFilters();
+  bindStudentPortalViewToggles();
+
+  const mp=document.getElementById('studentAttMonth');
+  if(mp) mp.value=new Date().toISOString().slice(0,7);
+
+  // Notification badge
+  const readSet = new Set(JSON.parse(localStorage.getItem('studentNotifRead_'+currentStudent.id)||'[]'));
+  const unread = DB.getNotifications().filter(n=>
+    DB.notificationAppliesToSession(n, { role:'student', id:currentStudent.id }) && !readSet.has(n.id)
+  ).length;
+  const badge = document.getElementById('sNavBadge');
+  if(badge && unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; }
+});
+
+function showSection(name) {
+  document.querySelectorAll('.content-area[id^="sec-"]').forEach(s=>s.style.display='none');
+  const sec=document.getElementById('sec-'+name);
+  if(sec) sec.style.display='';
+  currentSection=name;
+
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const activeNav=document.querySelector(`.nav-item[onclick*="${name}"]`);
+  if(activeNav) activeNav.classList.add('active');
+
+  const titles={
+    dashboard:'📊 My Dashboard',fees:'💰 My Fees',courses:'🎓 My Course',
+    attendance:'📋 My Attendance',timetable:'📅 My Time Table',
+    topics:'📚 My Topics',tasks:'✅ My Tasks',inquiries:'My Inquiries',internships:'My Internships',resume:'📄 My Resume',gallery:'🖼️ Gallery',
+    notes:'📝 Notes & Syllabus',notifications:'🔔 Notifications',notepad:'📓 My Notepad'
+  };
+  titles.settings = 'My Settings';
+  const el=document.getElementById('portalPageTitle');
+  if(el) el.textContent=titles[name]||'Portal';
+
+  if(name==='fees') { renderStudentFees(); renderStudentReceipts(); }
+  if(name==='courses') renderStudentCourses();
+  if(name==='timetable') renderStudentTimetable();
+  if(name==='topics') renderStudentTopics();
+  if(name==='tasks') renderStudentTasks();
+  if(name==='inquiries') renderStudentInquiries();
+  if(name==='internships') renderStudentInternships();
+  if(name==='gallery') renderStudentGallery();
+  if(name==='notifications') renderStudentNotifications();
+  if(name==='notes') renderStudentNotes('all');
+  if(name==='notepad') initStudentNotepad();
+  if(name==='settings') renderStudentSettings();
+}
+
+function renderPortalDashboard() {
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const paid=DB.paidFees(s.id);
+  const balance=(s.totalFees||0)-paid;
+  const month=new Date().toISOString().slice(0,7);
+  const attSum=DB.attendanceSummary(s.id,month);
+
+  const ph=document.getElementById('studentProfileHeader');
+  if(ph) ph.innerHTML=`
+    <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      ${ProfileImage.avatar(s, 'avatar-xl')}
+      <div style="flex:1">
+        <h2 style="margin-bottom:4px">${s.name}</h2>
+        <div class="role-badge" style="display:inline-flex;background:rgba(94,234,212,0.15);color:var(--primary);padding:4px 14px;border-radius:999px;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px">👨‍🎓 Student</div>
+        <div style="margin-top:8px"><span class="badge badge-info">${studentEnrollmentLabel(s)}</span></div>
+        <div style="margin-top:10px;display:flex;gap:20px;flex-wrap:wrap;font-size:0.85rem;color:var(--text-muted)">
+          <span>🎓 ${s.course||'No course'}</span>
+          <span>📦 ${s.batchNo||'—'}</span>
+          <span>💻 ${s.pcNo||'—'}</span>
+          <span>⏰ ${s.timings||'—'}</span>
+          <span>📅 ${s.day||'—'}</span>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:0.75rem;color:var(--text-muted)">Admission</div>
+        <div style="font-weight:700">${Fmt.date(s.admissionDate)}</div>
+        <div style="margin-top:8px">
+          <span class="badge ${{Continue:'badge-primary',Complete:'badge-success',Pending:'badge-warning',Leave:'badge-warning',Left:'badge-danger'}[s.courseStatus]||'badge-info'}">${s.courseStatus||'—'}</span>
+        </div>
+        ${s.courseStatus==='Complete'?`<div style="margin-top:8px"><button class="btn btn-sm btn-success" onclick="downloadMyCertificate()">🏅 Download Certificate</button></div>`:''}
+      </div>
+    </div>`;
+
+  const sc=document.getElementById('studentStatCards');
+  if(sc) sc.innerHTML=`
+    <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">💰</div><div class="stat-value" style="font-size:1.5rem">${Fmt.currency(s.totalFees||0)}</div><div class="stat-label">Total Fees</div></div>
+    <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">✅</div><div class="stat-value" style="font-size:1.5rem">${Fmt.currency(paid)}</div><div class="stat-label">Paid</div></div>
+    <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">⚠️</div><div class="stat-value" style="font-size:1.5rem">${Fmt.currency(balance)}</div><div class="stat-label">Balance</div></div>
+    <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">✔️</div><div class="stat-value">${attSum.present}</div><div class="stat-label">Present (This Month)</div></div>
+    <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">❌</div><div class="stat-value">${attSum.absent}</div><div class="stat-label">Absent (This Month)</div></div>
+    <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">📊</div><div class="stat-value">${attSum.total>0?Math.round(attSum.present/attSum.total*100):0}%</div><div class="stat-label">Attendance %</div></div>`;
+
+  const fc=document.getElementById('studentFeesChart');
+  if(fc&&window.Chart){
+    if(fc._chart) fc._chart.destroy();
+    fc._chart=new Chart(fc,ChartDefaults.doughnutOptions(['Paid','Balance'],[paid,balance]));
+  }
+  const ac=document.getElementById('studentAttChart');
+  if(ac&&window.Chart){
+    if(ac._chart) ac._chart.destroy();
+    ac._chart=new Chart(ac,ChartDefaults.doughnutOptions(['Present','Absent','Leave'],[attSum.present,attSum.absent,attSum.leave]));
+  }
+
+  renderMiniTimetable();
+  renderStudentPortalOverview();
+}
+
+function downloadMyCertificate() {
+  if (!currentStudent) return;
+  CertificateGenerator.generate(currentStudent);
+}
+
+function bindStudentPortalFilters() {
+  ['studentInquirySearch','studentInquiryStatusFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.boundStudentFilter) return;
+    el.dataset.boundStudentFilter = '1';
+    el.addEventListener('input', renderStudentInquiries);
+    el.addEventListener('change', renderStudentInquiries);
+  });
+  ['studentInternshipSearch','studentInternshipStatusFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.boundStudentFilter) return;
+    el.dataset.boundStudentFilter = '1';
+    el.addEventListener('input', renderStudentInternships);
+    el.addEventListener('change', renderStudentInternships);
+  });
+}
+
+function bindStudentPortalViewToggles() {
+  if (typeof AcademyView === 'undefined') return;
+  const bind = (id, page, mode, label, onChange) => {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.boundStudentView) return;
+    el.dataset.boundStudentView = '1';
+    el.innerHTML = AcademyView.toggleMarkup(page, mode, label);
+    AcademyView.bind(el, page, onChange);
+  };
+  bind('studentInquiryViewToggle', 'student_inquiries', studentInquiryViewMode, 'Inquiry view', mode => {
+    studentInquiryViewMode = mode;
+    renderStudentInquiries();
+  });
+  bind('studentInternshipViewToggle', 'student_internships', studentInternshipViewMode, 'Internship view', mode => {
+    studentInternshipViewMode = mode;
+    renderStudentInternships();
+  });
+}
+
+function normalizeStudentText(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function digitsOnly(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function studentOwnsInquiry(item) {
+  if (!currentStudent || !item) return false;
+  const studentMobiles = [currentStudent.mobile, currentStudent.altMobile].map(digitsOnly).filter(Boolean);
+  const inquiryMobiles = [item.mobile, item.altMobile].map(digitsOnly).filter(Boolean);
+  return item.convertedStudentId === currentStudent.id ||
+    (item.email && currentStudent.email && normalizeStudentText(item.email) === normalizeStudentText(currentStudent.email)) ||
+    (item.name && currentStudent.name && normalizeStudentText(item.name) === normalizeStudentText(currentStudent.name)) ||
+    inquiryMobiles.some(m => studentMobiles.includes(m));
+}
+
+function getStudentScopedInquiries() {
+  const q = normalizeStudentText(document.getElementById('studentInquirySearch')?.value);
+  const status = document.getElementById('studentInquiryStatusFilter')?.value || 'All';
+  return DB.getInquiries()
+    .filter(studentOwnsInquiry)
+    .filter(item => status === 'All' || item.status === status)
+    .filter(item => !q || [item.name, item.mobile, item.course, item.batchNo, item.source, item.status, item.priority, item.notes]
+      .join(' ').toLowerCase().includes(q));
+}
+
+function studentOwnsInternship(item) {
+  if (!currentStudent || !item) return false;
+  return item.studentId === currentStudent.id ||
+    (item.studentName && normalizeStudentText(item.studentName) === normalizeStudentText(currentStudent.name)) ||
+    (item.batchNo && currentStudent.batchNo && item.batchNo === currentStudent.batchNo && item.studentName && normalizeStudentText(item.studentName).includes(normalizeStudentText(currentStudent.name).split(' ')[0]));
+}
+
+function getStudentScopedInternships() {
+  const q = normalizeStudentText(document.getElementById('studentInternshipSearch')?.value);
+  const status = document.getElementById('studentInternshipStatusFilter')?.value || 'All';
+  return DB.getInternships()
+    .filter(studentOwnsInternship)
+    .filter(item => status === 'All' || item.status === status)
+    .filter(item => !q || [item.studentName, item.program, item.company, item.mentor, item.projectTitle, item.status, (item.skills || []).join(' '), item.certificateNo, item.evaluation, item.remarks]
+      .join(' ').toLowerCase().includes(q));
+}
+
+function studentCanSeeNote(note) {
+  if (!currentStudent || !note) return false;
+  const target = String(note.target || '').trim();
+  const targetLower = target.toLowerCase();
+  if (!target || targetLower === 'all') return true;
+  if (targetLower.startsWith('student:')) return targetLower === ('student:' + currentStudent.id).toLowerCase();
+  if (targetLower.startsWith('batch')) {
+    const batchNum = targetLower.replace('batch', '').trim();
+    return currentStudent.batchNo === 'Batch ' + batchNum || normalizeStudentText(currentStudent.batchNo) === targetLower;
+  }
+  return false;
+}
+
+function getStudentVisibleNotes() {
+  return DB.getTeacherNotes().filter(studentCanSeeNote);
+}
+
+function badgeForInquiryStatus(status) {
+  return {
+    Open:'badge-info',
+    'Follow Up':'badge-warning',
+    'Demo Scheduled':'badge-primary',
+    Joined:'badge-success',
+    Converted:'badge-success',
+    Closed:'badge-secondary',
+    Lost:'badge-danger',
+  }[status] || 'badge-info';
+}
+
+function badgeForInternshipStatus(status) {
+  return {
+    Planned:'badge-warning',
+    Active:'badge-primary',
+    Completed:'badge-success',
+    'On Hold':'badge-warning',
+    Cancelled:'badge-danger',
+  }[status] || 'badge-info';
+}
+
+function renderStudentPortalOverview() {
+  const wrap = document.getElementById('studentPortalOverview');
+  if (!wrap || !currentStudent) return;
+  const fee = DB.studentFeeSummary(currentStudent);
+  const month = new Date().toISOString().slice(0,7);
+  const att = DB.attendanceSummary(currentStudent.id, month);
+  const tasks = DB.getTasks().filter(t => t.assignedTo === currentStudent.id);
+  const pendingTasks = tasks.filter(t => t.status !== 'Completed').length;
+  const notes = getStudentVisibleNotes();
+  const inquiries = DB.getInquiries().filter(studentOwnsInquiry);
+  const internships = DB.getInternships().filter(studentOwnsInternship);
+  const notifs = DB.getNotifications().filter(n => DB.notificationAppliesToSession(n, { role:'student', id:currentStudent.id }));
+  const cards = [
+    ['Fees Balance', Fmt.currency(fee.balance), fee.status, 'fees', 'var(--danger)'],
+    ['Attendance', (att.total ? Math.round(att.present / att.total * 100) : 0) + '%', `${att.present} present this month`, 'attendance', 'var(--success)'],
+    ['Pending Tasks', pendingTasks, `${tasks.length} total tasks`, 'tasks', 'var(--warning)'],
+    ['Notes & Syllabus', notes.length, 'teacher shared items', 'notes', 'var(--primary)'],
+    ['Inquiries', inquiries.length, 'admission follow-ups', 'inquiries', 'var(--info)'],
+    ['Internships', internships.length, 'training records', 'internships', 'var(--secondary)'],
+    ['Notifications', notifs.length, 'academy notices', 'notifications', 'var(--accent)'],
+    ['Gallery', DB.getGallery().length, 'academy media', 'gallery', 'var(--violet)'],
+  ];
+  wrap.innerHTML = cards.map(([title, value, sub, section, color]) => `
+    <article class="dashboard-info-card" style="border-left:4px solid ${color}">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+        <div>
+          <div class="text-muted" style="font-size:0.74rem;text-transform:uppercase;font-weight:800">${Fmt.escape(title)}</div>
+          <div style="font-size:1.55rem;font-weight:850;color:${color};line-height:1.1;margin-top:4px">${Fmt.escape(value)}</div>
+          <div class="text-muted" style="font-size:0.8rem;margin-top:4px">${Fmt.escape(sub)}</div>
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="showSection('${section}')">View</button>
+      </div>
+    </article>`).join('');
+}
+
+function studentEnrollmentLabel(student) {
+  const dateValue = student && (student.admissionDate || student.startDate);
+  if (!dateValue) return 'Loaded Student';
+  const time = Date.parse(dateValue);
+  if (Number.isNaN(time)) return 'Loaded Student';
+  const days = Math.max(0, Math.floor((Date.now() - time) / 86400000));
+  return days <= 45 ? 'New Loaded Student' : 'Old Loaded Student';
+}
+
+function renderStudentSettings() {
+  const panel = document.getElementById('studentSettingsPanel');
+  if (!panel || !currentStudent) return;
+  const s = currentStudent;
+  const theme = document.documentElement.getAttribute('data-theme') || DB.getSettings().theme || 'dark';
+  const designSettings = typeof AcademyDesign !== 'undefined' ? AcademyDesign.settings() : DB.getSettings();
+  const notifs = DB.getNotifications().filter(n => DB.notificationAppliesToSession(n, { role:'student', id:s.id }));
+  const readSet = new Set(JSON.parse(localStorage.getItem('studentNotifRead_'+s.id)||'[]'));
+  const unread = notifs.filter(n => !readSet.has(n.id)).length;
+  const fee = DB.studentFeeSummary(s);
+  const loadLabel = studentEnrollmentLabel(s);
+  panel.innerHTML = `
+    <div class="student-settings-layout">
+      <article class="student-settings-card student-batch-card">
+        <div class="settings-card-kicker">Profile</div>
+        <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+          ${ProfileImage.avatar(s, 'avatar-lg')}
+          <div>
+            <h3 style="margin:0 0 4px">${Fmt.escape(s.name || 'Student')}</h3>
+            <span class="badge badge-primary">${Fmt.escape(loadLabel)}</span>
+          </div>
+        </div>
+        <div class="student-profile-quick-grid">
+          <div><span>Username</span><strong>${Fmt.escape(s.username || '-')}</strong></div>
+          <div><span>Course</span><strong>${Fmt.escape(s.course || '-')}</strong></div>
+          <div><span>Batch</span><strong>${Fmt.escape(s.batchNo || '-')}</strong></div>
+          <div><span>PC / Laptop</span><strong>${Fmt.escape(s.pcNo || '-')}</strong></div>
+          <div><span>Timing</span><strong>${Fmt.escape(s.timings || '-')}</strong></div>
+          <div><span>Admission</span><strong>${Fmt.date(s.admissionDate || s.startDate)}</strong></div>
+          <div><span>Fee Status</span><strong>${Fmt.escape(fee.status)}</strong></div>
+          <div><span>Balance</span><strong>${Fmt.currency(fee.balance)}</strong></div>
+        </div>
+      </article>
+
+      <article class="student-settings-card">
+        <div class="settings-card-kicker">Controls</div>
+        <div class="settings-action-list">
+          <button class="btn btn-secondary" onclick="toggleStudentThemeSetting()">Toggle Theme <strong>${Fmt.escape(theme)}</strong></button>
+          <button class="btn btn-primary" onclick="AcademyDesign.openPanel()">Open Design Settings <strong>${Fmt.escape(designSettings.uiDesignMode || 'modern')}</strong></button>
+          <button class="btn btn-secondary" onclick="resetStudentViewPrefs()">Reset Grid/List Views</button>
+          <button class="btn btn-secondary" onclick="markStudentNotifsReadFromSettings()">Mark Notifications Read <strong>${unread}</strong></button>
+          <button class="btn btn-secondary" onclick="refreshStudentProfile()">Reload My Data</button>
+          <button class="btn btn-danger" onclick="Auth.logout()">Logout</button>
+        </div>
+      </article>
+
+      <article class="student-settings-card">
+        <div class="settings-card-kicker">Portal Data</div>
+        <div class="student-profile-quick-grid">
+          <div><span>Notifications</span><strong>${notifs.length}</strong></div>
+          <div><span>Unread</span><strong>${unread}</strong></div>
+          <div><span>Inquiry View</span><strong>${Fmt.escape(studentInquiryViewMode)}</strong></div>
+          <div><span>Internship View</span><strong>${Fmt.escape(studentInternshipViewMode)}</strong></div>
+          <div><span>Tasks</span><strong>${DB.getTasks().filter(t => t.assignedTo === s.id).length}</strong></div>
+          <div><span>Teacher Notes</span><strong>${getStudentVisibleNotes().length}</strong></div>
+          <div><span>Design Style</span><strong>${Fmt.escape(designSettings.uiSurfaceStyle || 'glass')}</strong></div>
+          <div><span>Spacing</span><strong>${Fmt.escape(designSettings.uiDensity || 'comfortable')}</strong></div>
+          <div><span>Palette</span><strong>${Fmt.escape(designSettings.uiPalette || 'teal')}</strong></div>
+          <div><span>Contrast</span><strong>${Fmt.escape(designSettings.uiContrast || 'normal')}</strong></div>
+          <div><span>Font</span><strong>${Fmt.escape(designSettings.uiFontFamily || 'inter')}</strong></div>
+          <div><span>Sidebar</span><strong>${Fmt.escape(designSettings.uiSidebarSize || 'normal')}</strong></div>
+        </div>
+      </article>
+    </div>`;
+}
+
+function toggleStudentThemeSetting() {
+  ThemeManager.toggle();
+  renderStudentSettings();
+}
+
+function resetStudentViewPrefs() {
+  localStorage.removeItem('cc_view_student_inquiries');
+  localStorage.removeItem('cc_view_student_internships');
+  studentInquiryViewMode = 'grid';
+  studentInternshipViewMode = 'grid';
+  ['studentInquiryViewToggle','studentInternshipViewToggle'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) delete el.dataset.boundStudentView;
+  });
+  bindStudentPortalViewToggles();
+  renderStudentSettings();
+  Toast.success('View preferences reset');
+}
+
+function markStudentNotifsReadFromSettings() {
+  sMarkAllNotifsRead();
+  renderStudentSettings();
+}
+
+function refreshStudentProfile() {
+  if (!currentStudent) return;
+  const latest = DB.getStudent(currentStudent.id) || DB.getStudents().find(s => s.username === currentStudent.username);
+  if (latest) currentStudent = latest;
+  renderPortalDashboard();
+  renderStudentSettings();
+  Toast.success('Student data reloaded');
+}
+
+function renderStudentInquiries() {
+  if (!currentStudent) return;
+  bindStudentPortalViewToggles();
+  const rows = getStudentScopedInquiries();
+  const count = document.getElementById('studentInquiryCount');
+  const grid = document.getElementById('studentInquiryGrid');
+  const list = document.getElementById('studentInquiryListPanel');
+  const tbody = document.getElementById('studentInquiryTableBody');
+  if (count) count.textContent = `${rows.length} record${rows.length === 1 ? '' : 's'}`;
+  if (grid) grid.style.display = studentInquiryViewMode === 'grid' ? 'grid' : 'none';
+  if (list) list.style.display = studentInquiryViewMode === 'list' ? '' : 'none';
+  if (grid) {
+    grid.innerHTML = rows.length ? rows.map(item => `
+      <article class="inquiry-card">
+        <div class="inquiry-card-top">
+          <div>
+            <div class="inquiry-title">${Fmt.escape(item.name || currentStudent.name)}</div>
+            <div class="card-meta-line"><span>${Fmt.escape(item.course || '-')}</span><span>${Fmt.escape(item.source || '-')}</span></div>
+          </div>
+          <span class="badge ${badgeForInquiryStatus(item.status)}">${Fmt.escape(item.status || 'Open')}</span>
+        </div>
+        <div class="detail-row"><span>Mobile</span><strong>${Fmt.escape(item.mobile || '-')}</strong></div>
+        <div class="detail-row"><span>Batch / Time</span><strong>${Fmt.escape((item.batchNo || '-') + ' / ' + (item.preferredTime || '-'))}</strong></div>
+        <div class="detail-row"><span>Inquiry</span><strong>${Fmt.date(item.inquiryDate || item.createdAt)}</strong></div>
+        <div class="detail-row"><span>Follow Up</span><strong>${Fmt.date(item.followUpDate)}</strong></div>
+        <div class="detail-row"><span>Fees</span><strong>${Fmt.currency(item.quotedFees || 0)}</strong></div>
+        <div class="card-actions"><button class="btn btn-sm btn-primary" onclick="showStudentInquiryDetails('${item.id}')">View Details</button></div>
+      </article>`).join('') : '<div class="empty-state"><div class="empty-state-icon">&#128222;</div><p>No inquiry records visible for your profile</p></div>';
+  }
+  if (tbody) {
+    tbody.innerHTML = rows.length ? rows.map(item => `
+      <tr>
+        <td><strong>${Fmt.escape(item.name || currentStudent.name)}</strong><div class="text-muted">${Fmt.escape(item.mobile || '-')}</div></td>
+        <td>${Fmt.escape(item.course || '-')}<div class="text-muted">${Fmt.escape(item.batchNo || '-')}</div></td>
+        <td>${Fmt.date(item.followUpDate)}</td>
+        <td><span class="badge ${badgeForInquiryStatus(item.status)}">${Fmt.escape(item.status || 'Open')}</span></td>
+        <td><button class="btn btn-sm btn-primary" onclick="showStudentInquiryDetails('${item.id}')">View</button></td>
+      </tr>`).join('') : '<tr><td colspan="5" class="text-center text-muted" style="padding:30px">No inquiry records visible for your profile</td></tr>';
+  }
+}
+
+function renderStudentInternships() {
+  if (!currentStudent) return;
+  bindStudentPortalViewToggles();
+  const rows = getStudentScopedInternships();
+  const count = document.getElementById('studentInternshipCount');
+  const grid = document.getElementById('studentInternshipGrid');
+  const list = document.getElementById('studentInternshipListPanel');
+  const tbody = document.getElementById('studentInternshipTableBody');
+  if (count) count.textContent = `${rows.length} record${rows.length === 1 ? '' : 's'}`;
+  if (grid) grid.style.display = studentInternshipViewMode === 'grid' ? 'grid' : 'none';
+  if (list) list.style.display = studentInternshipViewMode === 'list' ? '' : 'none';
+  if (grid) {
+    grid.innerHTML = rows.length ? rows.map(item => `
+      <article class="internship-card">
+        <div class="person-card-top">
+          <div>
+            <div class="person-title">${Fmt.escape(item.program || 'Internship')}</div>
+            <div class="card-meta-line"><span>${Fmt.escape(item.company || '-')}</span><span>${Fmt.escape(item.mentor || '-')}</span></div>
+          </div>
+          <span class="badge ${badgeForInternshipStatus(item.status)}">${Fmt.escape(item.status || '-')}</span>
+        </div>
+        <div class="detail-row"><span>Dates</span><strong>${Fmt.date(item.startDate)} - ${Fmt.date(item.endDate)}</strong></div>
+        <div class="detail-row"><span>Project</span><strong>${Fmt.escape(item.projectTitle || '-')}</strong></div>
+        <div class="detail-row"><span>Skills</span><strong>${Fmt.escape((item.skills || []).join(', ') || '-')}</strong></div>
+        <div class="detail-row"><span>Certificate</span><strong>${Fmt.escape(item.certificateNo || '-')} ${item.evaluation ? '(' + Fmt.escape(item.evaluation) + ')' : ''}</strong></div>
+        <div class="card-actions"><button class="btn btn-sm btn-primary" onclick="showStudentInternshipDetails('${item.id}')">View Details</button></div>
+      </article>`).join('') : '<div class="empty-state"><div class="empty-state-icon">&#128188;</div><p>No internship records assigned yet</p></div>';
+  }
+  if (tbody) {
+    tbody.innerHTML = rows.length ? rows.map(item => `
+      <tr>
+        <td><strong>${Fmt.escape(item.program || '-')}</strong><div class="text-muted">${Fmt.escape(item.company || '-')}</div></td>
+        <td>${Fmt.escape(item.mentor || '-')}</td>
+        <td>${Fmt.date(item.startDate)}<br>${Fmt.date(item.endDate)}</td>
+        <td>${Fmt.escape(item.projectTitle || '-')}</td>
+        <td><span class="badge ${badgeForInternshipStatus(item.status)}">${Fmt.escape(item.status || '-')}</span></td>
+        <td><button class="btn btn-sm btn-primary" onclick="showStudentInternshipDetails('${item.id}')">View</button></td>
+      </tr>`).join('') : '<tr><td colspan="6" class="text-center text-muted" style="padding:30px">No internship records assigned yet</td></tr>';
+  }
+}
+
+function clearStudentInquiryFilters() {
+  const search = document.getElementById('studentInquirySearch');
+  const status = document.getElementById('studentInquiryStatusFilter');
+  if (search) search.value = '';
+  if (status) status.value = 'All';
+  renderStudentInquiries();
+}
+
+function clearStudentInternshipFilters() {
+  const search = document.getElementById('studentInternshipSearch');
+  const status = document.getElementById('studentInternshipStatusFilter');
+  if (search) search.value = '';
+  if (status) status.value = 'All';
+  renderStudentInternships();
+}
+
+function detailRows(rows) {
+  return `<div class="student-detail-grid">${rows.map(([label, value]) => `
+    <div class="detail-row"><span>${Fmt.escape(label)}</span><strong>${value || '-'}</strong></div>
+  `).join('')}</div>`;
+}
+
+function openStudentRecordModal(title, html) {
+  const titleEl = document.getElementById('studentRecordModalTitle');
+  const bodyEl = document.getElementById('studentRecordModalBody');
+  if (titleEl) titleEl.textContent = title;
+  if (bodyEl) bodyEl.innerHTML = html;
+  Modal.open('studentRecordModal');
+}
+
+function showStudentInquiryDetails(id) {
+  const item = getStudentScopedInquiries().find(x => x.id === id);
+  if (!item) return;
+  openStudentRecordModal('Inquiry Details', detailRows([
+    ['Name', Fmt.escape(item.name || currentStudent.name)],
+    ['Mobile', Fmt.escape(item.mobile || '-')],
+    ['Course', Fmt.escape(item.course || '-')],
+    ['Batch', Fmt.escape(item.batchNo || '-')],
+    ['Preferred Time', Fmt.escape(item.preferredTime || '-')],
+    ['Preferred Days', Fmt.escape(item.preferredDays || '-')],
+    ['Status', `<span class="badge ${badgeForInquiryStatus(item.status)}">${Fmt.escape(item.status || 'Open')}</span>`],
+    ['Priority', Fmt.escape(item.priority || '-')],
+    ['Inquiry Date', Fmt.date(item.inquiryDate || item.createdAt)],
+    ['Follow Up', Fmt.date(item.followUpDate)],
+    ['Expected Join', Fmt.date(item.expectedJoinDate)],
+    ['Quoted Fees', Fmt.currency(item.quotedFees || 0)],
+    ['Notes', Fmt.escape(item.notes || '-')],
+  ]));
+}
+
+function showStudentInternshipDetails(id) {
+  const item = getStudentScopedInternships().find(x => x.id === id);
+  if (!item) return;
+  openStudentRecordModal('Internship Details', detailRows([
+    ['Program', Fmt.escape(item.program || '-')],
+    ['Company', Fmt.escape(item.company || '-')],
+    ['Mentor', Fmt.escape(item.mentor || '-')],
+    ['Start Date', Fmt.date(item.startDate)],
+    ['End Date', Fmt.date(item.endDate)],
+    ['Duration', Fmt.escape(item.duration || '-')],
+    ['Hours', Fmt.escape(item.hours || 0)],
+    ['Status', `<span class="badge ${badgeForInternshipStatus(item.status)}">${Fmt.escape(item.status || '-')}</span>`],
+    ['Skills', Fmt.escape((item.skills || []).join(', ') || '-')],
+    ['Project', Fmt.escape(item.projectTitle || '-')],
+    ['Project URL', item.projectUrl ? `<a href="${Fmt.escape(item.projectUrl)}" target="_blank" style="color:var(--primary)">Open Project</a>` : '-'],
+    ['Certificate', Fmt.escape(item.certificateNo || '-')],
+    ['Evaluation', Fmt.escape(item.evaluation || '-')],
+    ['Remarks', Fmt.escape(item.remarks || '-')],
+  ]));
+}
+
+// ── NOTIFICATIONS ──────────────────────────────────────────
+function renderStudentNotifications() {
+  const wrap = document.getElementById('studentNotifList');
+  if (!wrap || !currentStudent) return;
+  const pColors = { High:'var(--danger)', Medium:'var(--warning)', Low:'var(--success)' };
+  const notifs = DB.getNotifications().filter(n => DB.notificationAppliesToSession(n, { role:'student', id:currentStudent.id }));
+  if (!notifs.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔔</div><p>No notifications yet</p></div>';
+    return;
+  }
+  const readSet = new Set(JSON.parse(localStorage.getItem('studentNotifRead_'+currentStudent.id)||'[]'));
+  wrap.innerHTML = notifs.map(n => {
+    const isRead = readSet.has(n.id);
+    return `<div class="glass-card" style="margin-bottom:10px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;${isRead?'opacity:0.7':'border-left:3px solid var(--primary)'}">
+      <span style="font-size:1.6rem;line-height:1">${n.icon||'📌'}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <strong style="font-size:0.9rem">${n.title}</strong>
+          <span style="width:7px;height:7px;border-radius:50%;background:${pColors[n.priority]||'var(--primary)'};display:inline-block"></span>
+          <span class="badge badge-${n.priority==='High'?'danger':n.priority==='Medium'?'warning':'success'}" style="font-size:0.65rem">${n.priority}</span>
+          ${!isRead?'<span class="badge badge-primary" style="font-size:0.62rem">NEW</span>':''}
+        </div>
+        <div style="font-size:0.83rem;color:var(--text-muted);margin-bottom:4px">${n.message}</div>
+        ${n.date?`<div style="font-size:0.72rem;color:var(--text-muted)">📅 ${n.date}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sMarkAllNotifsRead() {
+  if (!currentStudent) return;
+  const all = DB.getNotifications()
+    .filter(n => DB.notificationAppliesToSession(n, { role:'student', id:currentStudent.id }))
+    .map(n=>n.id);
+  localStorage.setItem('studentNotifRead_'+currentStudent.id, JSON.stringify(all));
+  const badge = document.getElementById('sNavBadge');
+  if (badge) badge.style.display = 'none';
+  renderStudentNotifications();
+  Toast.success('All notifications marked as read');
+}
+
+// ── NOTES & SYLLABUS (from teachers) ──────────────────────
+let _notesFilter = 'all';
+function renderStudentNotes(filter) {
+  _notesFilter = filter;
+  const wrap = document.getElementById('studentNotesList');
+  if (!wrap || !currentStudent) return;
+  let notes = getStudentVisibleNotes();
+  if (filter && filter !== 'all') notes = notes.filter(n => n.format === filter);
+  if (!notes.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><p>No notes available yet</p></div>';
+    return;
+  }
+  const fmtIcons = { Notes:'📝', Syllabus:'📋', Assignment:'📌', Tutorial:'📖', 'Practice Sheet':'🗒️', Other:'📄' };
+  wrap.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+    ${notes.map(n=>`
+      <div class="glass-card" style="padding:16px">
+        <div style="font-size:1.6rem;margin-bottom:8px">${fmtIcons[n.format]||'📄'}</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px">${n.title}</div>
+        <div class="badge badge-primary" style="font-size:0.65rem;margin-bottom:8px">${n.format}</div>
+        ${n.subject?`<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">📚 ${n.subject}</div>`:''}
+        ${n.description?`<div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">${n.description.slice(0,100)}${n.description.length>100?'...':''}</div>`:''}
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:10px">📅 ${Fmt.date(n.createdAt||n.date)} ${n.createdBy?'• By '+n.createdBy:''}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${n.content?`<button class="btn btn-sm btn-primary" onclick="viewNoteContent('${n.id}')">👁️ View</button>`:''}
+          ${n.fileData?`<button class="btn btn-sm btn-secondary" onclick="downloadNote('${n.id}')">⬇️ Download</button>`:''}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function filterStudentNotes(btn, filter) {
+  document.querySelectorAll('.s-notes-filter').forEach(b=>{ b.classList.remove('active'); b.classList.add('btn-secondary'); });
+  btn.classList.add('active'); btn.classList.remove('btn-secondary');
+  renderStudentNotes(filter);
+}
+
+function viewNoteContent(id) {
+  const note = getStudentVisibleNotes().find(n=>n.id===id);
+  if (!note) return;
+  const w = window.open('','_blank','width=800,height=600');
+  w.document.write(`<!DOCTYPE html><html><head><title>${note.title}</title>
+    <style>body{font-family:Arial,sans-serif;padding:30px;max-width:800px;margin:auto}
+    h2{color:#333}pre{white-space:pre-wrap;background:#f5f5f5;padding:16px;border-radius:8px}
+    @media print{button{display:none}}</style></head><body>
+    <h2>${note.title}</h2><p><strong>Format:</strong> ${note.format} | <strong>Subject:</strong> ${note.subject||'—'} | <strong>Date:</strong> ${Fmt.date(note.createdAt||note.date)}</p>
+    ${note.description?`<p>${note.description}</p>`:''}
+    <pre>${note.content||'(No content)'}</pre>
+    <button onclick="window.print()" style="margin-top:16px;padding:8px 16px;cursor:pointer">🖨️ Print</button>
+    </body></html>`);
+  w.document.close();
+}
+
+function downloadNote(id) {
+  const note = getStudentVisibleNotes().find(n=>n.id===id);
+  if (!note || !note.fileData) return;
+  const a = document.createElement('a');
+  a.href = note.fileData;
+  a.download = note.fileName || note.title;
+  a.click();
+  Toast.success('Download started');
+}
+
+// ── NOTEPAD ────────────────────────────────────────────────
+let _notepadInited = false;
+function initStudentNotepad() {
+  if (!currentStudent || _notepadInited) return;
+  _notepadInited = true;
+  const el = document.getElementById('studentNotepad');
+  if (!el) return;
+  el.value = DB.getNotepad(currentStudent.id);
+  let saveTimer;
+  el.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      DB.saveNotepad(currentStudent.id, el.value);
+      const st = document.getElementById('studentNotepadStatus');
+      if (st) { st.textContent = '✅ Saved'; setTimeout(()=>st.textContent='Auto-saves as you type',1800); }
+    }, 800);
+  });
+}
+
+function exportStudentNotepad() {
+  if (!currentStudent) return;
+  const text = document.getElementById('studentNotepad')?.value || '';
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'my-notes.txt'; a.click();
+  Toast.success('Notes exported!');
+}
+
+function printStudentNotepad() {
+  const text = document.getElementById('studentNotepad')?.value || '';
+  const w = window.open('','_blank','width=700,height=500');
+  w.document.write(`<html><head><title>My Notes</title><style>body{font-family:Arial,sans-serif;padding:30px;white-space:pre-wrap}</style></head><body>${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</body></html>`);
+  w.document.close(); w.print();
+}
+
+// ── FEE RECEIPTS ───────────────────────────────────────────
+function renderStudentReceipts() {
+  if (!currentStudent) return;
+  const wrap = document.getElementById('studentReceiptList');
+  if (!wrap) return;
+  const payments = DB.getStudentFees(currentStudent.id);
+  if (!payments.length) {
+    wrap.innerHTML = '<div class="empty-state" style="padding:20px"><div class="empty-state-icon">🧾</div><p>No payments yet</p></div>';
+    return;
+  }
+  wrap.innerHTML = `<table class="data-table"><thead><tr><th>Receipt#</th><th>Date</th><th>Amount</th><th>Mode</th><th>Remark</th><th>Action</th></tr></thead><tbody>
+    ${payments.map((p,i)=>`<tr>
+      <td><strong>CC-${String(i+1).padStart(4,'0')}</strong></td>
+      <td>${Fmt.date(p.date)}</td>
+      <td>${Fmt.currency(p.amount)}</td>
+      <td>${p.mode||'Cash'}</td>
+      <td>${p.note||p.remark||'—'}</td>
+      <td><button class="btn btn-sm btn-primary" onclick="downloadReceipt(${i})">🧾 Download</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function downloadReceipt(idx) {
+  if (!currentStudent) return;
+  const payments = DB.getStudentFees(currentStudent.id);
+  const p = payments[idx];
+  if (!p) return;
+  const receiptNo = 'CC-' + String(idx+1).padStart(4,'0');
+  const s = currentStudent;
+  const html = `<!DOCTYPE html><html><head><title>Fee Receipt ${receiptNo}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:0;margin:0;background:#fff;color:#000}
+    .receipt{max-width:600px;margin:30px auto;padding:30px;border:2px solid #333;border-radius:8px}
+    .header{text-align:center;border-bottom:2px solid #333;padding-bottom:16px;margin-bottom:20px}
+    .header h1{margin:0;font-size:1.4rem}
+    .header p{margin:4px 0;font-size:0.85rem;color:#555}
+    .receipt-no{background:#f5f5f5;padding:10px;border-radius:6px;display:flex;justify-content:space-between;margin-bottom:16px}
+    table{width:100%;border-collapse:collapse}
+    td{padding:8px 0;border-bottom:1px solid #eee;font-size:0.88rem}
+    td:first-child{color:#555;width:140px}
+    td:last-child{font-weight:600}
+    .amount-box{background:#f9f9f9;border:2px solid #333;border-radius:8px;padding:16px;text-align:center;margin:20px 0}
+    .amount-box .amt{font-size:2rem;font-weight:bold}
+    .footer{margin-top:24px;display:flex;justify-content:space-between;font-size:0.8rem;color:#555}
+    .seal{text-align:center;margin-top:20px;color:#888;font-style:italic}
+    @media print{.btn{display:none}}
+  </style></head><body>
+  <div class="receipt">
+    <div class="header">
+      <h1>Computer Care (Anubhav EduVista)</h1>
+      <p>Near Landon Hotel, Kapurthala | +91 78371-96514</p>
+      <h2 style="margin:10px 0 0;color:#333">Fee Receipt</h2>
+    </div>
+    <div class="receipt-no">
+      <span><strong>Receipt No:</strong> ${receiptNo}</span>
+      <span><strong>Date:</strong> ${Fmt.date(p.date)}</span>
+    </div>
+    <table>
+      <tr><td>Student Name</td><td>${s.name}</td></tr>
+      <tr><td>Course</td><td>${s.course||'—'}</td></tr>
+      <tr><td>Batch No</td><td>${s.batchNo||'—'}</td></tr>
+      <tr><td>Admission Date</td><td>${Fmt.date(s.admissionDate)}</td></tr>
+      <tr><td>Payment Mode</td><td>${p.mode||'Cash'}</td></tr>
+      ${p.note||p.remark?`<tr><td>Remark</td><td>${p.note||p.remark}</td></tr>`:''}
+    </table>
+    <div class="amount-box">
+      <div style="font-size:0.85rem;color:#666;margin-bottom:4px">Amount Received</div>
+      <div class="amt">${Fmt.currency(p.amount)}</div>
+    </div>
+    <div class="footer">
+      <span>Total Fees: ${Fmt.currency(s.totalFees||0)}</span>
+      <span>Paid Till Date: ${Fmt.currency(DB.paidFees(s.id))}</span>
+      <span>Balance: ${Fmt.currency((s.totalFees||0)-DB.paidFees(s.id))}</span>
+    </div>
+    <div class="seal">
+      <p>This is a computer-generated receipt.</p>
+      <p style="margin-top:30px">____________________________</p>
+      <p>Authorised Signature</p>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="window.print()" style="padding:8px 24px;cursor:pointer;background:#333;color:#fff;border:none;border-radius:6px;font-size:0.9rem">🖨️ Print Receipt</button>
+    </div>
+  </div>
+  </body></html>`;
+  const w = window.open('','_blank','width=700,height=700');
+  w.document.write(html); w.document.close();
+}
+
+function downloadAllReceipts() {
+  if (!currentStudent) return;
+  const payments = DB.getStudentFees(currentStudent.id);
+  if (!payments.length) { Toast.warning('No receipts available yet'); return; }
+  const s = currentStudent;
+  const paid = DB.paidFees(s.id);
+  const balance = (s.totalFees||0) - paid;
+  const rows = payments.map((p, i) => `
+    <tr>
+      <td>CC-${String(i+1).padStart(4,'0')}</td>
+      <td>${Fmt.date(p.date)}</td>
+      <td>${p.mode||'Cash'}</td>
+      <td>${p.note||p.remark||'—'}</td>
+      <td style="text-align:right">${Fmt.currency(p.amount)}</td>
+    </tr>
+  `).join('');
+  Exporter.toPDF_simple('Fee Receipts - ' + s.name, `
+    <h2>Fee Receipt Summary</h2>
+    <p><strong>Student:</strong> ${s.name} &nbsp; <strong>Course:</strong> ${s.course||'—'} &nbsp; <strong>Batch:</strong> ${s.batchNo||'—'}</p>
+    <table>
+      <thead><tr><th>Receipt</th><th>Date</th><th>Mode</th><th>Remark</th><th>Amount</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <br>
+    <table>
+      <tbody>
+        <tr><td><strong>Total Fees</strong></td><td>${Fmt.currency(s.totalFees||0)}</td></tr>
+        <tr><td><strong>Paid Till Date</strong></td><td>${Fmt.currency(paid)}</td></tr>
+        <tr><td><strong>Balance</strong></td><td>${Fmt.currency(balance)}</td></tr>
+      </tbody>
+    </table>
+  `);
+}
+
+function renderMiniTimetable() {
+  const tt=DB.getTimetable();
+  const wrap=document.getElementById('studentTTMini');
+  if(!wrap) return;
+  const s=currentStudent;
+  const {timeSlots,entries}=tt;
+  const devices=tt.devices||tt.days||[];
+  let html=`<table class="timetable" style="font-size:0.78rem"><thead><tr>
+    <th style="min-width:90px">Time</th>${devices.map(d=>`<th style="min-width:110px">${d}</th>`).join('')}
+    </tr></thead><tbody>`;
+  timeSlots.forEach((slot,si)=>{
+    html+=`<tr><td style="font-weight:700;color:var(--primary);white-space:nowrap;font-size:0.75rem">${slot}</td>`;
+    devices.forEach((device,di)=>{
+      const e=entries[`${si}_${di}`]||{};
+      const isMine=e.batch&&s.batchNo&&e.batch===s.batchNo;
+      const assignedDevice=e.device||e.pc||device;
+      html+=`<td style="${isMine?'background:rgba(94,234,212,0.1);':''}padding:4px">
+        ${e.subject?`<div class="timetable-cell-content" style="${isMine?'border-color:var(--primary)':''}">
+          <div style="font-size:0.75rem;font-weight:700;color:${isMine?'var(--primary)':'var(--text-main)'}">${e.subject}</div>
+          ${e.teacher?`<div style="font-size:0.68rem;color:var(--text-muted)">${e.teacher}</div>`:''}
+          ${e.batch?`<div style="font-size:0.67rem;color:var(--accent)">${e.batch} | ${assignedDevice}</div>`:''}
+        </div>`:'<div style="color:var(--text-muted);font-size:0.7rem;text-align:center;padding:6px">—</div>'}
+      </td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  wrap.innerHTML=html;
+}
+
+function renderStudentFees() {
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const feesData=DB.getFees(s.id);
+  const paid=DB.paidFees(s.id);
+  const balance=(s.totalFees||0)-paid;
+  const pct=s.totalFees?Math.round(paid/s.totalFees*100):0;
+  const panel=document.getElementById('studentFeesPanel');
+  if(!panel) return;
+
+  panel.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px">
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Total</div><div style="font-size:1.3rem;font-weight:700">${Fmt.currency(s.totalFees||0)}</div></div>
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Paid</div><div style="font-size:1.3rem;font-weight:700;color:var(--success)">${Fmt.currency(paid)}</div></div>
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Balance</div><div style="font-size:1.3rem;font-weight:700;color:${balance>0?'var(--danger)':'var(--success)'}">${Fmt.currency(balance)}</div></div>
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Monthly</div><div style="font-size:1.3rem;font-weight:700">${Fmt.currency(s.monthlyFees||0)}</div></div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:6px"><span>Payment Progress</span><span style="color:var(--primary);font-weight:700">${pct}%</span></div>
+      <div class="progress-bar-wrap" style="height:12px"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    </div>
+    <h4 style="margin-bottom:12px;color:var(--primary)">📜 Payment History</h4>
+    ${feesData.payments&&feesData.payments.length?`
+      <div class="table-container">
+        <table><thead><tr><th>#</th><th>Date</th><th>Amount</th><th>Mode</th><th>Note</th></tr></thead>
+        <tbody>${[...feesData.payments].reverse().map((p,i)=>`<tr>
+          <td>${feesData.payments.length-i}</td>
+          <td>${Fmt.date(p.date)}</td>
+          <td style="color:var(--success);font-weight:700">${Fmt.currency(p.amount)}</td>
+          <td>${p.mode||'Cash'}</td>
+          <td style="color:var(--text-muted)">${p.note||'—'}</td>
+        </tr>`).join('')}</tbody></table>
+      </div>` : '<div class="empty-state" style="padding:30px"><div class="empty-state-icon">💳</div><p>No payments recorded yet</p></div>'}
+    ${feesData.notes?`<div style="margin-top:12px;background:var(--glass-bg-ultra-light);border-radius:8px;padding:12px;font-size:0.85rem"><strong>Notes:</strong> ${feesData.notes}</div>`:''}`;
+}
+
+function renderStudentCourses() {
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const panel=document.getElementById('studentCoursesPanel');
+  if(!panel) return;
+
+  const subcats=s.subcategories||[];
+  const topics=DB.getTopics().filter(t=>t.studentId===s.id);
+  const completed=topics.filter(t=>t.status==='Completed').length;
+  const pending=topics.filter(t=>t.status!=='Completed').length;
+
+  panel.innerHTML=`
+    <div class="profile-header" style="margin-bottom:16px">
+      <div style="font-size:2.5rem">🎓</div>
+      <div>
+        <h3>${s.course||'No Course'}</h3>
+        <div style="color:var(--text-muted);font-size:0.85rem">Duration: ${s.duration||'—'} &nbsp;|&nbsp; Status: <span class="badge badge-primary">${s.courseStatus||'—'}</span></div>
+        <div style="color:var(--text-muted);font-size:0.82rem;margin-top:6px">Batch: ${s.batchNo||'—'} &nbsp;|&nbsp; PC: ${s.pcNo||'—'} &nbsp;|&nbsp; Timings: ${s.timings||'—'}</div>
+      </div>
+      ${s.grade?`<div style="margin-left:auto;text-align:center"><div style="font-size:0.75rem;color:var(--text-muted)">Grade</div><div style="font-size:2rem;font-weight:700;color:var(--primary)">${s.grade}</div></div>`:''}
+    </div>
+    ${s.percentage?`<div style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px"><span>Overall Performance</span><span style="font-weight:700;color:var(--primary)">${s.percentage}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${s.percentage}%"></div></div></div>`:''}
+    ${subcats.length?`<div style="margin-bottom:16px"><h4 style="margin-bottom:10px;color:var(--primary)">📚 Course Modules</h4><div style="display:flex;flex-wrap:wrap;gap:8px">${subcats.map(sub=>`<span class="badge badge-primary" style="font-size:0.8rem;padding:6px 14px">${sub}</span>`).join('')}</div></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Topics Completed</div><div style="font-size:1.8rem;font-weight:700;color:var(--success)">${completed}</div></div>
+      <div class="glass-card" style="text-align:center"><div style="font-size:0.72rem;color:var(--text-muted)">Topics Pending</div><div style="font-size:1.8rem;font-weight:700;color:var(--warning)">${pending}</div></div>
+    </div>
+    ${s.rank?`<div class="glass-card" style="padding:12px;text-align:center;margin-bottom:12px"><span style="color:var(--text-muted);font-size:0.82rem">Class Rank: </span><strong style="font-size:1.2rem;color:var(--accent)">🏆 #${s.rank}</strong></div>`:''}
+    ${s.feedback?`<div style="margin-bottom:16px;background:var(--glass-bg-ultra-light);border-radius:8px;padding:14px;font-size:0.85rem"><strong style="color:var(--primary)">Teacher Feedback:</strong><p style="margin-top:6px">${s.feedback}</p></div>`:''}
+    ${s.courseStatus==='Complete'?`
+    <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:12px;padding:20px;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:8px">🏅</div>
+      <h4 style="color:var(--success);margin-bottom:8px">Congratulations! Course Completed!</h4>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px">You have successfully completed the ${s.course} course.</p>
+      <button class="btn btn-success" onclick="downloadMyCertificate()" style="margin-right:10px">🏅 Download Certificate</button>
+      <button class="btn btn-secondary" onclick="downloadMyDMC()">📋 Download DMC</button>
+    </div>` : ''}`;
+}
+
+function renderStudentAttendance() {
+  if(!currentStudent) return;
+  const month=document.getElementById('studentAttMonth')?document.getElementById('studentAttMonth').value:new Date().toISOString().slice(0,7);
+  const attData=DB.getAttendance(month);
+  const personAtt=attData[currentStudent.id]||{};
+  const [y,m]=month.split('-').map(Number);
+  const days=new Date(y,m,0).getDate();
+  let P=0,A=0,L=0;
+  const panel=document.getElementById('studentAttPanel');
+  if(!panel) return;
+
+  let cells='';
+  for(let d=1;d<=days;d++){
+    const status=personAtt[d]||'';
+    if(status==='P')P++; else if(status==='A')A++; else if(status==='L')L++;
+    const [y2,m2]=month.split('-').map(Number);
+    const dayName=new Date(y2,m2-1,d).toLocaleDateString('en-IN',{weekday:'short'});
+    const isSun=dayName==='Sun';
+    cells+=`<div style="text-align:center;padding:6px 2px">
+      <div style="font-size:0.7rem;color:${isSun?'var(--danger)':'var(--text-muted)'}">${dayName}</div>
+      <div style="font-size:0.75rem;margin-top:2px;color:var(--text-muted);font-weight:600">${d}</div>
+      <div style="margin-top:4px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;margin:4px auto 0;
+        background:${status==='P'?'rgba(52,211,153,0.2)':status==='A'?'rgba(251,113,133,0.2)':status==='L'?'rgba(251,191,36,0.2)':'var(--glass-bg-ultra-light)'};
+        color:${status==='P'?'var(--success)':status==='A'?'var(--danger)':status==='L'?'var(--warning)':'var(--text-muted)'};
+        border:1px solid ${status==='P'?'rgba(52,211,153,0.3)':status==='A'?'rgba(251,113,133,0.3)':status==='L'?'rgba(251,191,36,0.3)':'var(--glass-border)'}">
+        ${status||'—'}
+      </div>
+    </div>`;
+  }
+
+  const total=P+A+L;
+  const pct=total>0?Math.round(P/total*100):0;
+  panel.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="glass-card" style="text-align:center;padding:14px"><div style="font-size:0.72rem;color:var(--text-muted)">Present</div><div style="font-size:1.5rem;font-weight:700;color:var(--success)">${P}</div></div>
+      <div class="glass-card" style="text-align:center;padding:14px"><div style="font-size:0.72rem;color:var(--text-muted)">Absent</div><div style="font-size:1.5rem;font-weight:700;color:var(--danger)">${A}</div></div>
+      <div class="glass-card" style="text-align:center;padding:14px"><div style="font-size:0.72rem;color:var(--text-muted)">Leave</div><div style="font-size:1.5rem;font-weight:700;color:var(--warning)">${L}</div></div>
+      <div class="glass-card" style="text-align:center;padding:14px"><div style="font-size:0.72rem;color:var(--text-muted)">Attendance %</div><div style="font-size:1.5rem;font-weight:700;color:var(--primary)">${pct}%</div></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:0;background:var(--glass-bg-ultra-light);border-radius:12px;padding:12px;border:1px solid var(--glass-border)">${cells}</div>`;
+}
+
+function renderStudentTimetable() {
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const tt=DB.getTimetable();
+  const panel=document.getElementById('studentTTPanel');
+  if(!panel) return;
+
+  const {timeSlots,entries}=tt;
+  const devices=tt.devices||tt.days||[];
+  let html=`<table class="timetable"><thead><tr>
+    <th style="position:sticky;left:0;z-index:2;background:var(--table-header-bg);min-width:110px">Time</th>
+    ${devices.map(d=>`<th style="min-width:140px">${d}</th>`).join('')}
+    </tr></thead><tbody>`;
+  timeSlots.forEach((slot,si)=>{
+    html+=`<tr><td style="position:sticky;left:0;background:var(--glass-bg-heavy);font-weight:700;color:var(--primary);font-size:0.78rem">${slot}</td>`;
+    devices.forEach((device,di)=>{
+      const e=entries[`${si}_${di}`]||{};
+      const isMine=s.batchNo&&e.batch===s.batchNo;
+      const assignedDevice=e.device||e.pc||device;
+      html+=`<td style="${isMine?'background:rgba(94,234,212,0.08);':''};padding:4px">
+        ${e.subject?`<div class="timetable-cell-content" style="${isMine?'border:1px solid rgba(94,234,212,0.3);':''}">
+          <div style="font-size:0.78rem;font-weight:700;color:${isMine?'var(--primary)':'inherit'}">${e.subject}</div>
+          ${e.teacher?`<div style="font-size:0.7rem;color:var(--text-muted)">👨‍🏫 ${e.teacher}</div>`:''}
+          ${e.batch?`<div style="font-size:0.68rem;color:var(--accent);font-weight:600">${e.batch} | ${assignedDevice}</div>`:''}
+        </div>`:'<div style="color:var(--text-muted);text-align:center;font-size:0.72rem;padding:8px">—</div>'}
+      </td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  panel.innerHTML=html;
+
+  if(s.batchNo){
+    panel.insertAdjacentHTML('afterbegin',`<div style="margin-bottom:12px" class="glass-card"><span style="font-size:0.82rem;color:var(--text-muted)">✨ Highlighted = your batch: </span><span class="badge badge-primary">${s.batchNo}</span></div>`);
+  }
+}
+
+function downloadStudentTimetable() {
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const tt=DB.getTimetable();
+  const {timeSlots,entries}=tt;
+  const devices=tt.devices||tt.days||[];
+  let rows='';
+  timeSlots.forEach((slot,si)=>{
+    let deviceCells='';
+    devices.forEach((device,di)=>{
+      const e=entries[`${si}_${di}`]||{};
+      const isMine=s.batchNo&&e.batch===s.batchNo;
+      const assignedDevice=e.device||e.pc||device;
+      deviceCells += `<td style="${isMine?'background:#e6f7f4;font-weight:600':''}">
+        ${e.subject?`<div><strong>${e.subject}</strong></div>`:''}
+        ${e.teacher?`<div>${e.teacher}</div>`:''}
+        ${e.batch?`<div>${e.batch} | ${assignedDevice}</div>`:''}
+      </td>`;
+    });
+    rows += `<tr><td style="white-space:nowrap;font-weight:700">${slot}</td>${deviceCells}</tr>`;
+  });
+  Exporter.toPDF_simple('My Time Table - ' + s.name, `
+    <h2>My PC / Laptop Time Table</h2>
+    <p><strong>Student:</strong> ${s.name} &nbsp; <strong>Batch:</strong> ${s.batchNo||'—'} &nbsp; <strong>Course:</strong> ${s.course||'—'}</p>
+    <table>
+      <thead><tr><th>Time</th>${devices.map(d=>`<th>${d}</th>`).join('')}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <p style="font-size:12px;margin-top:12px">Highlighted cells are assigned to your batch.</p>
+  `);
+}
+
+function renderStudentTopics() {
+  if(!currentStudent) return;
+  const topics=DB.getTopics().filter(t=>t.studentId===currentStudent.id||!t.studentId);
+  const panel=document.getElementById('studentTopicsPanel');
+  if(!panel) return;
+  if(!topics.length){
+    panel.innerHTML='<div class="empty-state"><div class="empty-state-icon">📚</div><p>No topics assigned yet</p></div>';
+    return;
+  }
+  panel.innerHTML=`<div class="table-container"><table>
+    <thead><tr><th>Date</th><th>Time</th><th>Topic</th><th>Sub-topics</th><th>Teacher</th><th>Status</th><th>Homework</th></tr></thead>
+    <tbody>${topics.map(t=>`<tr>
+      <td style="font-size:0.82rem">${Fmt.date(t.date||t.createdAt)}</td>
+      <td style="font-size:0.82rem">${t.time||'—'}</td>
+      <td style="font-weight:600;font-size:0.88rem">${t.topic}</td>
+      <td style="font-size:0.8rem;color:var(--text-muted)">${t.subtopics||'—'}</td>
+      <td style="font-size:0.82rem">${t.teacherName||'—'}</td>
+      <td><span class="badge ${t.status==='Completed'?'badge-success':'badge-warning'}">${t.status||'Pending'}</span></td>
+      <td style="font-size:0.8rem;color:var(--text-muted)">${t.homework||'—'}</td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+
+/* ===== TASKS ===== */
+function renderStudentTasks() {
+  if(!currentStudent) return;
+  const panel=document.getElementById('studentTasksPanel');
+  if(!panel) return;
+
+  const allTasks=DB.getTasks();
+  let tasks=allTasks.filter(t=>t.assignedTo===currentStudent.id);
+
+  if(studentTaskFilter!=='all') tasks=tasks.filter(t=>t.status===studentTaskFilter);
+
+  const priorityColors={High:'var(--danger)',Medium:'var(--warning)',Low:'var(--success)'};
+  const statusColors={Pending:'var(--warning)','In Progress':'var(--info)',Completed:'var(--success)',Cancelled:'var(--danger)'};
+
+  if(!tasks.length){
+    panel.innerHTML='<div class="empty-state"><div class="empty-state-icon">✅</div><p>No tasks assigned</p></div>';
+    return;
+  }
+
+  panel.innerHTML=tasks.map(task=>{
+    const isOverdue=task.dueDate&&new Date(task.dueDate)<new Date()&&task.status!=='Completed';
+    return `<div class="glass-card" style="margin-bottom:12px;padding:16px;border-left:4px solid ${priorityColors[task.priority]||'var(--primary)'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span style="font-weight:700;font-size:0.95rem">${task.title}</span>
+            <span class="badge" style="background:${priorityColors[task.priority]||'var(--primary)'}22;color:${priorityColors[task.priority]||'var(--primary)'};font-size:0.7rem">${task.priority}</span>
+            <span class="badge" style="background:${statusColors[task.status]||'var(--info)'}22;color:${statusColors[task.status]||'var(--info)'};font-size:0.7rem">${task.status}</span>
+            ${isOverdue?`<span class="badge" style="background:var(--danger)22;color:var(--danger);font-size:0.7rem">⚠️ Overdue</span>`:''}
+          </div>
+          ${task.description?`<div style="font-size:0.83rem;color:var(--text-muted);margin-bottom:6px">${task.description}</div>`:''}
+          <div style="font-size:0.78rem;color:var(--text-muted)">
+            ${task.dueDate?`📅 Due: <strong style="${isOverdue?'color:var(--danger)':''}">${Fmt.date(task.dueDate)}</strong> &nbsp;`:''}
+            Assigned by: ${task.createdByName||'Admin'}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${task.status!=='Completed'?`<button class="btn btn-sm btn-success" onclick="markStudentTaskDone('${task.id}')">✅ Done</button>`:'<span style="color:var(--success);font-size:0.82rem">✔ Completed</span>'}
+          ${task.status==='Pending'?`<button class="btn btn-sm btn-info" style="font-size:0.72rem" onclick="markStudentTaskStart('${task.id}')">▶ Start</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterStudentTasksTab(btn){
+  document.querySelectorAll('.task-tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  studentTaskFilter=btn.dataset.filter;
+  renderStudentTasks();
+}
+
+function markStudentTaskDone(taskId){
+  DB.updateTask(taskId,{status:'Completed',updatedAt:new Date().toISOString()});
+  renderStudentTasks();
+  Toast.success('Task marked as completed!');
+}
+
+function markStudentTaskStart(taskId){
+  DB.updateTask(taskId,{status:'In Progress',updatedAt:new Date().toISOString()});
+  renderStudentTasks();
+  Toast.info('Task started!');
+}
+
+/* ===== GALLERY ===== */
+function renderStudentGallery() {
+  const gallery=DB.getGallery();
+  const grid=document.getElementById('studentGalleryGrid');
+  if(!grid) return;
+  if(!gallery.length){
+    grid.innerHTML='<div class="empty-state"><div class="empty-state-icon">🖼️</div><p>No gallery items yet</p></div>';
+    return;
+  }
+  grid.innerHTML=gallery.map(item=>`
+    <div class="gallery-item">
+      ${item.type==='image'?`<img src="${item.url||''}" alt="${item.title||''}" style="width:100%;height:180px;object-fit:cover;border-radius:8px">`
+      :`<div style="height:180px;background:var(--glass-bg-heavy);display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:2rem">📹</div>`}
+      <div style="padding:8px 4px">
+        <div style="font-weight:600;font-size:0.85rem">${item.title||'Untitled'}</div>
+        ${item.description?`<div style="font-size:0.75rem;color:var(--text-muted)">${item.description}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+/* ===== RESUME ===== */
+function loadSavedResume(){
+  if(!currentStudent) return;
+  const saved=DB.getResume(currentStudent.id);
+  if(!saved) {
+    // Pre-fill from student data
+    const s=currentStudent;
+    const rName=document.getElementById('rName');
+    if(rName) rName.value=s.name||'';
+    const rEmail=document.getElementById('rEmail');
+    if(rEmail) rEmail.value=s.email||'';
+    const rMobile=document.getElementById('rMobile');
+    if(rMobile) rMobile.value=s.mobile||'';
+    const rAddress=document.getElementById('rAddress');
+    if(rAddress) rAddress.value=[s.village,s.district,s.state].filter(Boolean).join(', ')||'';
+    const rCerts=document.getElementById('rCertifications');
+    if(rCerts&&s.course) rCerts.value=`Certificate of Completion — ${s.course}, ${new Date().getFullYear()}`;
+    const rSkillsTech=document.getElementById('rSkillsTech');
+    if(rSkillsTech&&s.subcategories) rSkillsTech.value=s.subcategories.join(', ');
+    return;
+  }
+  // Load saved data
+  const fields=['rName','rEmail','rMobile','rAddress','rLinkedin','rSkillsTech','rSkillsSoft','rLanguages','rHobbies','rEducation','rCertifications','rProjects','rExperience','rObjective','rDeclaration'];
+  fields.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&saved[id]!==undefined) el.value=saved[id];
+  });
+  renderResumePreview(saved);
+}
+
+function saveResume(){
+  if(!currentStudent) return;
+  const fields=['rName','rEmail','rMobile','rAddress','rLinkedin','rSkillsTech','rSkillsSoft','rLanguages','rHobbies','rEducation','rCertifications','rProjects','rExperience','rObjective','rDeclaration'];
+  const data={};
+  fields.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) data[id]=el.value;
+  });
+  DB.saveResume(currentStudent.id,data);
+  renderResumePreview(data);
+  Toast.success('Resume saved!');
+}
+
+function renderResumePreview(data){
+  const preview=document.getElementById('resumePreview');
+  if(!preview) return;
+  const s=currentStudent||{};
+  const techSkills=(data.rSkillsTech||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const softSkills=(data.rSkillsSoft||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const eduLines=(data.rEducation||'').split('\n').filter(Boolean);
+  const certLines=(data.rCertifications||'').split('\n').filter(Boolean);
+  const projectLines=(data.rProjects||'').split('\n').filter(Boolean);
+
+  preview.innerHTML=`
+    <div style="font-family:Georgia,serif;color:var(--text-main)">
+      <!-- Header -->
+      <div style="text-align:center;border-bottom:2px solid var(--primary);padding-bottom:14px;margin-bottom:14px">
+        <h2 style="font-size:1.4rem;margin-bottom:4px;color:var(--primary)">${data.rName||s.name||'Your Name'}</h2>
+        <div style="font-size:0.78rem;color:var(--text-muted);display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+          ${data.rEmail?`<span>✉ ${data.rEmail}</span>`:''}
+          ${data.rMobile?`<span>📞 ${data.rMobile}</span>`:''}
+          ${data.rAddress?`<span>📍 ${data.rAddress}</span>`:''}
+          ${data.rLinkedin?`<span>🔗 ${data.rLinkedin}</span>`:''}
+        </div>
+      </div>
+
+      ${data.rObjective?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Objective</div><p style="font-size:0.8rem;color:var(--text-muted);line-height:1.6">${data.rObjective}</p></div>`:''}
+
+      ${techSkills.length?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Technical Skills</div><div style="display:flex;flex-wrap:wrap;gap:4px">${techSkills.map(sk=>`<span style="background:rgba(94,234,212,0.1);color:var(--primary);border-radius:6px;padding:3px 10px;font-size:0.75rem;font-weight:600">${sk}</span>`).join('')}</div></div>`:''}
+
+      ${softSkills.length?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Soft Skills</div><div style="display:flex;flex-wrap:wrap;gap:4px">${softSkills.map(sk=>`<span style="background:rgba(139,156,255,0.1);color:var(--accent);border-radius:6px;padding:3px 10px;font-size:0.75rem;font-weight:600">${sk}</span>`).join('')}</div></div>`:''}
+
+      ${eduLines.length?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Education</div>${eduLines.map(line=>{const[deg,inst,yr,pct]=line.split('|').map(s=>s.trim());return `<div style="display:flex;justify-content:space-between;font-size:0.8rem;padding:4px 0;border-bottom:1px solid var(--glass-bg-ultra-light)"><div><strong>${deg||line}</strong>${inst?` — ${inst}`:''}</div><div style="color:var(--text-muted)">${[yr,pct].filter(Boolean).join(' | ')}</div></div>`;}).join('')}</div>`:''}
+
+      ${certLines.length?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Certifications</div>${certLines.map(c=>`<div style="font-size:0.8rem;padding:3px 0">🏅 ${c}</div>`).join('')}</div>`:''}
+
+      ${projectLines.length?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Projects</div>${projectLines.map(line=>{const[name,desc,tech]=line.split('|').map(s=>s.trim());return `<div style="margin-bottom:6px"><div style="font-size:0.82rem;font-weight:700">${name||line}</div>${desc?`<div style="font-size:0.78rem;color:var(--text-muted)">${desc}</div>`:''}${tech?`<div style="font-size:0.75rem;color:var(--primary)">Tech: ${tech}</div>`:''}</div>`;}).join('')}</div>`:''}
+
+      ${data.rExperience?`<div style="margin-bottom:12px"><div style="font-size:0.85rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;border-bottom:1px solid var(--glass-border);padding-bottom:4px">Experience / Internship</div><p style="font-size:0.8rem;line-height:1.6">${data.rExperience}</p></div>`:''}
+
+      ${data.rLanguages?`<div style="margin-bottom:10px;display:flex;gap:20px;flex-wrap:wrap"><div><span style="font-size:0.78rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px">Languages:</span> <span style="font-size:0.8rem">${data.rLanguages}</span></div>${data.rHobbies?`<div><span style="font-size:0.78rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px">Hobbies:</span> <span style="font-size:0.8rem">${data.rHobbies}</span></div>`:''}</div>`:''}
+
+      ${data.rDeclaration?`<div style="margin-top:10px;font-size:0.75rem;color:var(--text-muted);font-style:italic;border-top:1px solid var(--glass-border);padding-top:8px">${data.rDeclaration}</div>`:''}
+    </div>`;
+}
+
+function downloadResume(){
+  saveResume();
+  const s=currentStudent||{};
+  const fields=['rName','rEmail','rMobile','rAddress','rLinkedin','rSkillsTech','rSkillsSoft','rLanguages','rHobbies','rEducation','rCertifications','rProjects','rExperience','rObjective','rDeclaration'];
+  const data={};
+  fields.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value;});
+
+  const techSkills=(data.rSkillsTech||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const softSkills=(data.rSkillsSoft||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const eduLines=(data.rEducation||'').split('\n').filter(Boolean);
+  const certLines=(data.rCertifications||'').split('\n').filter(Boolean);
+  const projectLines=(data.rProjects||'').split('\n').filter(Boolean);
+
+  const w=window.open('','_blank');
+  if(!w){Toast.error('Popup blocked! Please allow popups.');return;}
+  w.document.write(`<!DOCTYPE html>
+<html><head><title>Resume — ${data.rName||s.name}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Georgia',serif;background:#fff;color:#000;padding:40px;max-width:820px;margin:0 auto;font-size:13px;line-height:1.6;}
+  h1{font-size:22px;color:#047857;text-align:center;margin-bottom:4px;}
+  .contact{text-align:center;color:#555;font-size:11px;margin-bottom:12px;}
+  .section-title{font-size:11px;font-weight:700;color:#047857;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid #047857;padding-bottom:3px;margin:16px 0 8px;}
+  .skill-tag{background:#e6f4f1;color:#047857;border-radius:4px;padding:2px 8px;font-size:11px;display:inline-block;margin:2px;}
+  .edu-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;font-size:12px;}
+  .project{margin-bottom:8px;}
+  .project-name{font-weight:700;}
+  .declaration{font-style:italic;color:#666;font-size:11px;margin-top:16px;border-top:1px solid #ddd;padding-top:8px;}
+  @media print{body{padding:20px}button{display:none}}
+</style></head><body>
+  <h1>${data.rName||s.name||'Resume'}</h1>
+  <div class="contact">
+    ${[data.rEmail,data.rMobile,data.rAddress,data.rLinkedin].filter(Boolean).join(' &nbsp;|&nbsp; ')}
+  </div>
+  <hr style="margin-bottom:12px;border-color:#047857">
+
+  ${data.rObjective?`<div class="section-title">Objective</div><p style="font-size:12px;color:#333">${data.rObjective}</p>`:''}
+  ${techSkills.length?`<div class="section-title">Technical Skills</div><div>${techSkills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>`:''}
+  ${softSkills.length?`<div class="section-title">Soft Skills</div><div>${softSkills.map(s=>`<span class="skill-tag" style="background:#e6e8ff;color:#3730a3">${s}</span>`).join('')}</div>`:''}
+  ${eduLines.length?`<div class="section-title">Education</div>${eduLines.map(line=>{const[deg,inst,yr,pct]=line.split('|').map(x=>x.trim());return`<div class="edu-row"><div><strong>${deg||line}</strong>${inst?' — '+inst:''}</div><div>${[yr,pct].filter(Boolean).join(' | ')}</div></div>`;}).join('')}`:''}
+  ${certLines.length?`<div class="section-title">Certifications</div>${certLines.map(c=>`<div style="font-size:12px;padding:2px 0">🏅 ${c}</div>`).join('')}`:''}
+  ${projectLines.length?`<div class="section-title">Projects</div>${projectLines.map(line=>{const[name,desc,tech]=line.split('|').map(x=>x.trim());return`<div class="project"><div class="project-name">${name||line}</div>${desc?`<div style="color:#555">${desc}</div>`:''}${tech?`<div style="color:#047857;font-size:11px">Tech: ${tech}</div>`:''}</div>`;}).join('')}`:''}
+  ${data.rExperience?`<div class="section-title">Experience / Internship</div><p style="font-size:12px">${data.rExperience}</p>`:''}
+  ${data.rLanguages?`<div class="section-title">Additional Info</div><p><strong>Languages:</strong> ${data.rLanguages}</p>${data.rHobbies?`<p><strong>Hobbies:</strong> ${data.rHobbies}</p>`:''}`:''}
+  ${data.rDeclaration?`<div class="declaration">${data.rDeclaration}</div>`:''}
+
+  <div style="text-align:right;margin-top:24px;font-size:11px;color:#888">Generated by Computer Care (Anubhav EduVista) — ${new Date().toLocaleDateString()}</div>
+  <br>
+  <button onclick="window.print()" style="padding:10px 24px;background:#047857;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">🖨️ Print / Save PDF</button>
+</body></html>`);
+  w.document.close();
+}
+
+function downloadMyDMC(){
+  if(!currentStudent) return;
+  const s=currentStudent;
+  const settings=DB.getSettings();
+  Exporter.toPDF_simple(`DMC — ${s.name}`,`
+    <h2>DETAIL MARKS CARD (DMC)</h2>
+    <table style="width:100%;border:none;font-size:13px;margin-bottom:20px">
+      <tr><td style="border:none"><strong>Name:</strong> ${s.name}</td><td style="border:none"><strong>Course:</strong> ${s.course}</td></tr>
+      <tr><td style="border:none"><strong>Batch:</strong> ${s.batchNo||'—'}</td><td style="border:none"><strong>Duration:</strong> ${s.duration||'—'}</td></tr>
+      <tr><td style="border:none"><strong>Admission:</strong> ${s.admissionDate||'—'}</td><td style="border:none"><strong>Status:</strong> ${s.courseStatus||'—'}</td></tr>
+    </table>
+    <table>
+      <thead><tr><th>Subject/Module</th><th>Marks</th><th>Grade</th></tr></thead>
+      <tbody>
+        ${(s.subcategories||[]).map(sub=>`<tr><td>${sub}</td><td>${s.percentage||'—'}</td><td>${s.grade||'—'}</td></tr>`).join('')}
+        <tr style="background:#e6f4f1"><td><strong>Overall</strong></td><td><strong>${s.percentage||'—'}%</strong></td><td><strong>${s.grade||'—'}</strong></td></tr>
+      </tbody>
+    </table>
+    <br>
+    <p><strong>Remarks:</strong> ${s.feedback||'Good Performance'}</p>
+    <div style="display:flex;justify-content:space-between;margin-top:40px">
+      <div style="text-align:center;width:160px"><div style="border-top:1px solid #333;padding-top:6px;font-size:12px">Examiner</div></div>
+      <div style="text-align:center;width:160px"><div style="border-top:1px solid #333;padding-top:6px;font-size:12px">Principal</div></div>
+    </div>`);
+}
+</script>
+</body>
+</html>

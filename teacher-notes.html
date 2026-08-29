@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes & Syllabus — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item active"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">📝 Notes & Syllabus</div>
+          <div class="page-subtitle">Share notes, syllabus, assignments, PDFs with students</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="notes">
+
+      <!-- Upload Form (teachers/admin only) -->
+      <div class="glass-panel" id="noteUploadForm">
+        <h4 style="margin-bottom:16px;color:var(--primary)">📤 Share Note / Syllabus with Students</h4>
+        <div class="form-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Title *</label>
+            <input id="noteTitle" class="form-control" placeholder="e.g. HTML & CSS Syllabus — Chapter 3">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject / Course</label>
+            <input id="noteSubject" class="form-control" placeholder="e.g. Web Designing, Photoshop">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Format / Type</label>
+            <select id="noteFormat" class="form-control">
+              <option value="Notes">📝 Notes</option>
+              <option value="Syllabus">📋 Syllabus</option>
+              <option value="Assignment">📌 Assignment</option>
+              <option value="PDF">📄 PDF / File</option>
+              <option value="Tutorial">📖 Tutorial</option>
+              <option value="Reference">🔗 Reference Material</option>
+              <option value="Practice Sheet">🗒️ Practice Sheet</option>
+              <option value="Other">📁 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Share With</label>
+            <select id="noteTarget" class="form-control">
+              <option value="all">👥 All Students</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Content / Notes Text *</label>
+            <textarea id="noteContent" class="form-control" rows="6"
+              placeholder="Write the notes, syllabus outline, assignment instructions, or any content here...&#10;&#10;You can use multiple lines, include chapter headings, topics, questions etc."></textarea>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Attach File (optional — PDF, DOC, Image, etc.)</label>
+            <input type="file" id="noteFile" class="form-control"
+              accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.xlsx,.ppt,.pptx">
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Max file size: ~2MB. File is stored locally in browser.</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveNote()">📤 Share with Students</button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="notes-filter-row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm notes-filter-btn active" onclick="filterNotesByTab(this,'all')">All</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'Notes')">📝 Notes</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'Syllabus')">📋 Syllabus</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'Assignment')">📌 Assignment</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'PDF')">📄 PDF</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'Tutorial')">📖 Tutorial</button>
+        <button class="btn btn-sm btn-secondary notes-filter-btn" onclick="filterNotesByTab(this,'Practice Sheet')">🗒️ Practice</button>
+      </div>
+
+      <!-- Notes List -->
+      <div id="notesList">
+        <div class="empty-state"><div class="loader"></div><p>Loading notes...</p></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/notes.js?v=20260704g"></script>
+<script>
+function setNoteStatusTab(status, btn) {
+  document.querySelectorAll('#noteStatusTabs .status-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (typeof renderNotes === 'function') renderNotes(status);
+}
+</script>
+</body>
+</html>

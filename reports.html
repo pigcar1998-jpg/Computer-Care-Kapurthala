@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports & Export — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item active"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div><div class="page-title">📄 Reports & Export</div><div class="page-subtitle">Generate certificates, DMC, profiles, and export data</div></div>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-import btn-sm" onclick="ExcelImport.openImportModal()" style="display:flex;align-items:center;gap:6px">📥 Import Excel</button>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="reports">
+      <!-- Summary Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-icon">👥</div><div class="stat-value" id="rpTotalStudents">0</div><div class="stat-label">Students</div></div>
+        <div class="stat-card" style="--card-color:var(--secondary)"><div class="stat-icon">👨‍🏫</div><div class="stat-value" id="rpTotalTeachers">0</div><div class="stat-label">Teachers</div></div>
+        <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">✅</div><div class="stat-value" id="rpCompleted">0</div><div class="stat-label">Completed</div></div>
+        <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">💵</div><div class="stat-value" id="rpCollected">₹0</div><div class="stat-label">Collected</div></div>
+        <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">⚠️</div><div class="stat-value" id="rpPending">₹0</div><div class="stat-label">Pending Fees</div></div>
+      </div>
+
+      <!-- Main Reports Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px">
+
+        <!-- Certificate Generation -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">🎓 Completion Certificate</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Generate official course completion certificates for students who have finished their course.</p>
+          <div class="form-group mb-2">
+            <label class="form-label">Select Student</label>
+            <select id="certStudentId" class="form-control"></select>
+          </div>
+          <button class="btn btn-primary w-full" onclick="generateCertificate()">🎓 Generate Certificate (PDF)</button>
+        </div>
+
+        <!-- DMC Generation -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">📋 Detail Marks Card (DMC)</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Generate detailed marks cards showing subject-wise performance and grades.</p>
+          <div class="form-group mb-2">
+            <label class="form-label">Select Student</label>
+            <select id="dmcStudentId" class="form-control"></select>
+          </div>
+          <button class="btn btn-primary w-full" onclick="generateDMC()">📋 Generate DMC (PDF)</button>
+        </div>
+
+        <!-- Student Profile -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">👤 Student Profile Report</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Download a complete student profile with all personal, academic, and fee details.</p>
+          <div class="form-group mb-2">
+            <label class="form-label">Select Student</label>
+            <select id="profileStudentId" class="form-control"></select>
+          </div>
+          <button class="btn btn-secondary w-full" onclick="generateStudentProfile()">📄 Download Profile PDF</button>
+        </div>
+
+        <!-- Teacher Profile -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">Teacher Profile Report</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Download teacher profile details with attendance, subject, performance, and permitted salary data.</p>
+          <div class="form-group mb-2">
+            <label class="form-label">Select Teacher</label>
+            <select id="profileTeacherId" class="form-control"></select>
+          </div>
+          <button class="btn btn-secondary w-full" onclick="generateTeacherProfile()">Download Teacher Profile PDF</button>
+        </div>
+
+        <!-- Fees Receipt -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">💰 Fees Receipt</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Generate official fees receipts for individual or all students.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="fees.html" class="btn btn-secondary w-full" style="justify-content:center">💳 Go to Fees Page for Receipts</a>
+            <button class="btn btn-ghost w-full" onclick="exportAllFeesCsv()">📊 Export All Fees CSV</button>
+          </div>
+        </div>
+
+        <!-- Bulk Student Export -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">👥 Bulk Student Export</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Export all student data in various formats.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-primary w-full" onclick="exportAllStudentsPDF()">📄 All Students PDF</button>
+            <button class="btn btn-secondary w-full" onclick="exportAllStudentsCSV()">📊 All Students CSV</button>
+            <button class="btn btn-ghost w-full" onclick="exportTeachersReport()">👨‍🏫 Teachers Report PDF</button>
+          </div>
+        </div>
+
+        <!-- Database Backup -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">🗄️ Database Backup & Restore</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Export or import the complete academy database as a JSON file.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-success w-full" onclick="exportFullDatabase()">⬇️ Export Full Database (JSON)</button>
+            <div style="position:relative">
+              <input type="file" id="importFile" accept=".json" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+              <button class="btn btn-warning w-full" onclick="document.getElementById('importFile').click()">⬆️ Import Database (JSON)</button>
+            </div>
+            <button class="btn btn-ghost w-full" style="font-size:0.8rem" onclick="if(confirm('This will reset ALL data to defaults. Are you sure?')){localStorage.clear();DB.init();location.reload();}">⚠️ Reset to Defaults</button>
+          </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const importFile = document.getElementById('importFile');
+              if (importFile && typeof importDatabase === 'function') importFile.addEventListener('change', importDatabase);
+            });
+          </script>
+        </div>
+
+        <!-- Excel Import / Export (SheetJS) -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">📊 Excel Import / Export</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Export any data table to Excel (.xlsx) or import student/teacher data from an Excel file.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-success w-full" onclick="exportStudentsExcel()">📥 Export Students to Excel</button>
+            <button class="btn btn-secondary w-full" onclick="exportTeachersExcel()">📥 Export Teachers to Excel</button>
+            <button class="btn btn-secondary w-full" onclick="exportFeesExcel()">📥 Export Fees to Excel</button>
+            <button class="btn btn-secondary w-full" onclick="exportAttendanceExcel()">📥 Export Attendance to Excel</button>
+            <button class="btn btn-success w-full" onclick="MasterExcel.exportAllData()">Export Complete Master Excel Workbook</button>
+            <div style="border-top:1px solid var(--glass-border);padding-top:8px;display:flex;flex-direction:column;gap:8px">
+              <select id="xlsxImportTarget" class="form-control">
+                <option value="students">Students database</option>
+                <option value="teachers">Teachers database</option>
+              </select>
+              <select id="xlsxImportMode" class="form-control">
+                <option value="merge">Add new and update existing</option>
+                <option value="replace">Replace selected database</option>
+                <option value="removeMissing">Add/update and remove missing records</option>
+              </select>
+              <input type="file" id="xlsxImportFile" accept=".xlsx,.xls,.csv" style="display:none">
+              <button class="btn btn-warning w-full" onclick="document.getElementById('xlsxImportFile').click()">Import Selected Database from Excel / CSV</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Internship Export -->
+        <div class="glass-panel">
+          <h3 class="section-title" style="margin-bottom:16px">💼 Internship Reports</h3>
+          <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">Open the internship database for full details, imports, exports, and individual PDF records.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="internship.html" class="btn btn-primary w-full" style="justify-content:center">💼 Open Internship Page</a>
+            <button class="btn btn-secondary w-full" onclick="exportInternshipsFromReports('csv')">📊 Export Internships CSV</button>
+            <button class="btn btn-ghost w-full" onclick="exportInternshipsFromReports('json')">🗄 Export Internships JSON</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Attendance Report -->
+      <div class="glass-panel">
+        <h3 class="section-title" style="margin-bottom:16px">📋 Attendance Report</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Month</label>
+            <input type="month" id="attReportMonth" class="form-control" style="width:auto">
+          </div>
+          <button class="btn btn-primary" onclick="generateAttendanceReport()">📋 Generate Attendance PDF</button>
+          <button class="btn btn-secondary" onclick="generateAttendanceCSV()">📊 Export CSV</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/master-excel.js?v=20260704g"></script>
+<script src="js/reports.js?v=20260704g"></script>
+<script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    const mp=document.getElementById('attReportMonth');
+    if(mp) mp.value=new Date().toISOString().slice(0,7);
+  });
+
+  function exportAllFeesCsv(){
+    const students=DB.getStudents();
+    const headers=['Name','Course','Total Fees','Paid','Balance'];
+    const rows=students.map(s=>{const p=DB.paidFees(s.id);return[s.name,s.course||'',s.totalFees||0,p,(s.totalFees||0)-p];});
+    Exporter.toCSV(headers,rows,'fees-summary.csv');
+    Toast.success('CSV exported!');
+  }
+
+  function exportTeachersReport(){
+    const teachers=DB.getTeachers();
+    const rows=teachers.map(t=>`<tr><td>${t.name}</td><td>${t.qualification||'—'}</td><td>${t.subject||'—'}</td><td>${t.mobile||'—'}</td><td>${t.performance||'—'}</td></tr>`).join('');
+    Exporter.toPDF_simple('Teachers Report',`<table><thead><tr><th>Name</th><th>Qualification</th><th>Subject</th><th>Mobile</th><th>Performance</th></tr></thead><tbody>${rows}</tbody></table>`);
+    Toast.success('PDF generated!');
+  }
+
+  function exportInternshipsFromReports(format){
+    const records = DB.getInternships();
+    if(format === 'json'){
+      Exporter.toJSON(records, 'internships.json');
+    } else {
+      const headers=['Student','Batch','Program','Company','Mentor','Start','End','Status','Certificate'];
+      const rows=records.map(i=>[i.studentName||'',i.batchNo||'',i.program||'',i.company||'',i.mentor||'',i.startDate||'',i.endDate||'',i.status||'',i.certificateNo||'']);
+      Exporter.toCSV(headers, rows, 'internships.csv');
+    }
+    Toast.success('Internships exported!');
+  }
+
+  function generateAttendanceReport(){
+    const month=document.getElementById('attReportMonth').value;
+    const students=DB.getStudents();
+    const attData=DB.getAttendance(month);
+    const [y,m]=month.split('-').map(Number);
+    const days=new Date(y,m,0).getDate();
+    const rows=students.map(s=>{
+      const pAtt=attData[s.id]||{};
+      const P=Object.values(pAtt).filter(v=>v==='P').length;
+      const A=Object.values(pAtt).filter(v=>v==='A').length;
+      const L=Object.values(pAtt).filter(v=>v==='L').length;
+      const pct=P+A+L>0?Math.round(P/(P+A+L)*100):0;
+      return `<tr><td>${s.name}</td><td>${s.course||'—'}</td><td style="color:green">${P}</td><td style="color:red">${A}</td><td style="color:orange">${L}</td><td>${pct}%</td></tr>`;
+    }).join('');
+    Exporter.toPDF_simple(`Attendance Report — ${month}`,`<h2>Monthly Attendance Report</h2><p>Month: ${month} | Total Days: ${days}</p><table><thead><tr><th>Student</th><th>Course</th><th>Present</th><th>Absent</th><th>Leave</th><th>%</th></tr></thead><tbody>${rows}</tbody></table>`);
+    Toast.success('Attendance PDF generated!');
+  }
+
+  // ── EXCEL IMPORT / EXPORT (SheetJS) ────────────────────────────────
+  function xlsxDownload(wb, filename) {
+    if (!window.XLSX) { Toast.error('SheetJS not loaded. Check internet connection.'); return; }
+    XLSX.writeFile(wb, filename);
+  }
+
+  function exportStudentsExcel() {
+    if (!window.XLSX) { Toast.error('SheetJS not loaded'); return; }
+    const students = DB.getStudents();
+    const data = students.map(s => ({
+      ID: s.id, Name: s.name, Username: s.username,
+      Course: s.course||'', BatchNo: s.batchNo||'', PCNo: s.pcNo||'',
+      Timings: s.timings||'', Day: s.day||'',
+      AdmissionDate: s.admissionDate||'', DOB: s.dob||'',
+      Mobile: s.mobile||'', Email: s.email||'', Address: s.address||'',
+      Guardian: s.guardian||'', GuardianMobile: s.guardianMobile||'',
+      TotalFees: s.totalFees||0, Paid: DB.paidFees(s.id),
+      Balance: (s.totalFees||0)-DB.paidFees(s.id),
+      CourseStatus: s.courseStatus||'', Performance: s.performance||'',
+      ProfileImage: s.profileImage||''
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Students');
+    xlsxDownload(wb, 'students.xlsx');
+    Toast.success('Students exported to Excel!');
+  }
+
+  function exportTeachersExcel() {
+    if (!window.XLSX) { Toast.error('SheetJS not loaded'); return; }
+    const teachers = DB.getTeachers();
+    const data = teachers.map(t => ({
+      ID: t.id, Name: t.name, Username: t.username,
+      Qualification: t.qualification||'', Subject: t.subject||'',
+      Mobile: t.mobile||'', Email: t.email||'', DOB: t.dob||'',
+      Address: t.address||'', JoinDate: t.joinDate||'',
+      Salary: t.salary||0, Performance: t.performance||'',
+      ProfileImage: t.profileImage||''
+    }));
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Teachers');
+    xlsxDownload(wb, 'teachers.xlsx');
+    Toast.success('Teachers exported to Excel!');
+  }
+
+  function exportFeesExcel() {
+    if (!window.XLSX) { Toast.error('SheetJS not loaded'); return; }
+    const students = DB.getStudents();
+    const rows = [];
+    students.forEach(s => {
+      const fees = DB.getStudentFees(s.id);
+      if (fees.length === 0) {
+        rows.push({ Student: s.name, Course: s.course||'', Date:'—', Amount:0, Mode:'—', Remark:'No payments' });
+      } else {
+        fees.forEach(f => rows.push({
+          Student: s.name, Course: s.course||'',
+          Date: f.date||'', Amount: f.amount||0, Mode: f.mode||'Cash', Remark: f.remark||''
+        }));
+      }
+    });
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Fees');
+    xlsxDownload(wb, 'fees.xlsx');
+    Toast.success('Fees exported to Excel!');
+  }
+
+  function exportAttendanceExcel() {
+    if (!window.XLSX) { Toast.error('SheetJS not loaded'); return; }
+    const month = document.getElementById('attReportMonth').value || new Date().toISOString().slice(0,7);
+    const students = DB.getStudents();
+    const attData = DB.getAttendance(month);
+    const data = students.map(s => {
+      const pAtt = attData[s.id] || {};
+      const P = Object.values(pAtt).filter(v=>v==='P').length;
+      const A = Object.values(pAtt).filter(v=>v==='A').length;
+      const L = Object.values(pAtt).filter(v=>v==='L').length;
+      return { Student:s.name, Course:s.course||'', Month:month, Present:P, Absent:A, Leave:L, Percentage: P+A+L>0?Math.round(P/(P+A+L)*100)+'%':'0%' };
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
+    xlsxDownload(wb, `attendance-${month}.xlsx`);
+    Toast.success('Attendance exported to Excel!');
+  }
+
+  // Excel Import: add, update, replace, or remove student/teacher records.
+  function importCell(row, names, fallback='') {
+    for (const name of names) {
+      if (Object.prototype.hasOwnProperty.call(row, name) && row[name] !== undefined && row[name] !== null && row[name] !== '') return row[name];
+    }
+    return fallback;
+  }
+
+  function cleanImportText(value) {
+    return String(value ?? '').trim();
+  }
+
+  function parseImportNumber(value, fallback=0) {
+    const cleaned = String(value ?? '').replace(/[^\d.-]/g, '');
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function parseImportBool(value, fallback=true) {
+    const v = cleanImportText(value).toLowerCase();
+    if (!v) return fallback;
+    if (['false','no','inactive','0'].includes(v)) return false;
+    return true;
+  }
+
+  function findImportMatch(collection, row, type) {
+    const id = cleanImportText(importCell(row, ['ID','Id','id', type === 'students' ? 'StudentID' : 'TeacherID', type === 'students' ? 'Student Id' : 'Teacher Id']));
+    const name = cleanImportText(importCell(row, ['Name','name','Full Name','FullName']));
+    const mobile = cleanImportText(importCell(row, ['Mobile','mobile','Phone','phone','Contact','contact']));
+    const email = cleanImportText(importCell(row, ['Email','email']));
+    return collection.find(item =>
+      (id && item.id === id) ||
+      (mobile && String(item.mobile || '').trim() === mobile) ||
+      (email && String(item.email || '').trim().toLowerCase() === email.toLowerCase()) ||
+      (name && String(item.name || '').trim().toLowerCase() === name.toLowerCase())
+    );
+  }
+
+  function mapStudentImport(row, existing) {
+    const name = cleanImportText(importCell(row, ['Name','name','Full Name','FullName'], existing && existing.name));
+    if (!name) return null;
+    const courseName = cleanImportText(importCell(row, ['Course','course'], existing && existing.course));
+    const courseIdInput = cleanImportText(importCell(row, ['CourseId','Course ID','courseId'], existing && existing.courseId));
+    const course = DB.getCourses().find(c =>
+      (courseIdInput && c.id === courseIdInput) ||
+      (courseName && c.name.toLowerCase() === courseName.toLowerCase())
+    );
+    const subcats = cleanImportText(importCell(row, ['Subcategories','Sub Categories','Topics','Modules'], ''));
+    const imported = {
+      ...(existing || {}),
+      id: cleanImportText(importCell(row, ['ID','Id','id','StudentID','Student Id'], existing && existing.id)) || (existing && existing.id) || DB.generateId('s'),
+      name,
+      fatherName: cleanImportText(importCell(row, ['Father','Father Name','FatherName','fatherName'], existing && existing.fatherName)),
+      motherName: cleanImportText(importCell(row, ['Mother','Mother Name','MotherName','motherName'], existing && existing.motherName)),
+      gender: cleanImportText(importCell(row, ['Gender','gender'], existing && existing.gender)),
+      dob: cleanImportText(importCell(row, ['DOB','Date of Birth','Birth Date','dob'], existing && existing.dob)),
+      mobile: cleanImportText(importCell(row, ['Mobile','mobile','Phone','phone','Contact'], existing && existing.mobile)),
+      altMobile: cleanImportText(importCell(row, ['Alt Mobile','Alternate Mobile','altMobile'], existing && existing.altMobile)),
+      email: cleanImportText(importCell(row, ['Email','email'], existing && existing.email)),
+      aadhaar: cleanImportText(importCell(row, ['Aadhaar','Aadhaar No','Aadhaar Card','aadhaar'], existing && existing.aadhaar)),
+      qualification: cleanImportText(importCell(row, ['Qualification','qualification'], existing && existing.qualification)),
+      address: cleanImportText(importCell(row, ['Address','address'], existing && existing.address)),
+      district: cleanImportText(importCell(row, ['District','district'], existing && existing.district)),
+      state: cleanImportText(importCell(row, ['State','state'], existing && existing.state)),
+      pincode: cleanImportText(importCell(row, ['PinCode','Pincode','PIN','pincode'], existing && existing.pincode)),
+      courseId: course ? course.id : courseIdInput,
+      course: course ? course.name : courseName,
+      subcategories: subcats ? subcats.split(',').map(x => x.trim()).filter(Boolean) : ((existing && existing.subcategories) || []),
+      batchNo: cleanImportText(importCell(row, ['Batch','BatchNo','Batch No','batchNo'], existing && existing.batchNo)),
+      pcNo: cleanImportText(importCell(row, ['PC','PCNo','PC No','Laptop','Device','pcNo'], existing && existing.pcNo)),
+      timings: cleanImportText(importCell(row, ['Timings','Timing','Time','timings'], existing && existing.timings)),
+      day: cleanImportText(importCell(row, ['Day','Days','day'], existing && existing.day)),
+      totalFees: parseImportNumber(importCell(row, ['TotalFees','Total Fees','Fees','totalFees'], existing && existing.totalFees), existing && existing.totalFees || 0),
+      monthlyFees: parseImportNumber(importCell(row, ['MonthlyFees','Monthly Fees','monthlyFees'], existing && existing.monthlyFees), existing && existing.monthlyFees || 0),
+      duration: cleanImportText(importCell(row, ['Duration','duration'], existing && existing.duration)),
+      admissionDate: cleanImportText(importCell(row, ['AdmissionDate','Admission Date','admissionDate'], existing && existing.admissionDate)) || new Date().toISOString().slice(0,10),
+      courseStatus: cleanImportText(importCell(row, ['CourseStatus','Course Status','Status','status'], existing && existing.courseStatus)) || 'Continue',
+      username: cleanImportText(importCell(row, ['Username','username'], existing && existing.username)) || name.toLowerCase().replace(/\s+/g,'') + '123',
+      password: cleanImportText(importCell(row, ['Password','password'], existing && existing.password)) || 'student123',
+      grade: cleanImportText(importCell(row, ['Grade','grade'], existing && existing.grade)),
+      percentage: parseImportNumber(importCell(row, ['Percentage','Percent','percentage'], existing && existing.percentage), existing && existing.percentage || 0),
+      rank: parseImportNumber(importCell(row, ['Rank','rank'], existing && existing.rank), existing && existing.rank || 0),
+      feedback: cleanImportText(importCell(row, ['Feedback','Notes','feedback'], existing && existing.feedback)),
+      profileImage: cleanImportText(importCell(row, ['ProfileImage','Profile Image','Photo','Image','profileImage'], existing && existing.profileImage)),
+      active: parseImportBool(importCell(row, ['Active','active'], existing && existing.active), true),
+      role: 'student',
+    };
+    return imported;
+  }
+
+  function mapTeacherImport(row, existing) {
+    const name = cleanImportText(importCell(row, ['Name','name','Full Name','FullName'], existing && existing.name));
+    if (!name) return null;
+    return {
+      ...(existing || {}),
+      id: cleanImportText(importCell(row, ['ID','Id','id','TeacherID','Teacher Id'], existing && existing.id)) || (existing && existing.id) || DB.generateId('t'),
+      name,
+      qualification: cleanImportText(importCell(row, ['Qualification','qualification'], existing && existing.qualification)),
+      subject: cleanImportText(importCell(row, ['Subject','Expertise','subject'], existing && existing.subject)),
+      mobile: cleanImportText(importCell(row, ['Mobile','mobile','Phone','phone','Contact'], existing && existing.mobile)),
+      email: cleanImportText(importCell(row, ['Email','email'], existing && existing.email)),
+      gender: cleanImportText(importCell(row, ['Gender','gender'], existing && existing.gender)),
+      dob: cleanImportText(importCell(row, ['DOB','Date of Birth','dob'], existing && existing.dob)),
+      joinDate: cleanImportText(importCell(row, ['JoinDate','Join Date','Joining Date','joinDate'], existing && existing.joinDate)),
+      address: cleanImportText(importCell(row, ['Address','address'], existing && existing.address)),
+      username: cleanImportText(importCell(row, ['Username','username'], existing && existing.username)) || name.toLowerCase().replace(/\s+/g,'') + '123',
+      password: cleanImportText(importCell(row, ['Password','password'], existing && existing.password)) || 'teacher123',
+      performance: cleanImportText(importCell(row, ['Performance','performance'], existing && existing.performance)) || 'Good',
+      salary: parseImportNumber(importCell(row, ['Salary','salary'], existing && existing.salary), existing && existing.salary || 0),
+      profileImage: cleanImportText(importCell(row, ['ProfileImage','Profile Image','Photo','Image','profileImage'], existing && existing.profileImage)),
+      active: parseImportBool(importCell(row, ['Active','active'], existing && existing.active), true),
+      role: 'teacher',
+    };
+  }
+
+  function importPeopleRows(rows, target, mode) {
+    const original = target === 'teachers' ? DB.getTeachers() : DB.getStudents();
+    let next = mode === 'replace' ? [] : original.map(item => ({ ...item }));
+    const seen = new Set();
+    let added = 0, updated = 0, removed = 0, skipped = 0;
+
+    rows.forEach(row => {
+      const action = cleanImportText(importCell(row, ['Action','action','Mode','mode'], '')).toLowerCase();
+      const existing = findImportMatch(next, row, target);
+      const mapped = target === 'teachers' ? mapTeacherImport(row, existing) : mapStudentImport(row, existing);
+      if (!mapped) { skipped++; return; }
+      seen.add(mapped.id);
+
+      if (['delete','remove','removed'].includes(action)) {
+        const before = next.length;
+        next = next.filter(item => item.id !== mapped.id);
+        removed += before - next.length;
+        return;
+      }
+
+      const idx = next.findIndex(item => item.id === mapped.id);
+      if (idx >= 0) { next[idx] = mapped; updated++; }
+      else { next.push(mapped); added++; }
+    });
+
+    if (mode === 'removeMissing') {
+      const before = next.length;
+      next = next.filter(item => seen.has(item.id));
+      removed += before - next.length;
+    }
+
+    if (target === 'teachers') DB.saveTeachers(next);
+    else DB.saveStudents(next);
+    return { added, updated, removed, skipped, total: next.length };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const xlsxInput = document.getElementById('xlsxImportFile');
+    if (xlsxInput) {
+      xlsxInput.addEventListener('change', function() {
+        if (!window.XLSX) { Toast.error('SheetJS not loaded'); return; }
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const wb = XLSX.read(e.target.result, {type:'binary'});
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws, { raw:false, defval:'' });
+            if (!rows.length) { Toast.error('No data found in file'); return; }
+            const target = document.getElementById('xlsxImportTarget')?.value || 'students';
+            const mode = document.getElementById('xlsxImportMode')?.value || 'merge';
+            const result = importPeopleRows(rows, target, mode);
+            renderReportsSummary();
+            populateStudentDropdown();
+            showAutoSave();
+            Toast.success(`Import done: ${result.added} added, ${result.updated} updated, ${result.removed} removed`);
+            this.value = '';
+          } catch(err) {
+            Toast.error('Import failed: '+err.message);
+          }
+        };
+        reader.readAsBinaryString(file);
+      });
+    }
+  });
+
+  function generateAttendanceCSV(){
+    const month=document.getElementById('attReportMonth').value;
+    const students=DB.getStudents();
+    const attData=DB.getAttendance(month);
+    const headers=['Student','Course','Present','Absent','Leave','Percentage'];
+    const rows=students.map(s=>{
+      const pAtt=attData[s.id]||{};
+      const P=Object.values(pAtt).filter(v=>v==='P').length;
+      const A=Object.values(pAtt).filter(v=>v==='A').length;
+      const L=Object.values(pAtt).filter(v=>v==='L').length;
+      const pct=P+A+L>0?Math.round(P/(P+A+L)*100):0;
+      return[s.name,s.course||'',P,A,L,pct+'%'];
+    });
+    Exporter.toCSV(headers,rows,`attendance-${month}.csv`);
+    Toast.success('CSV exported!');
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/excel-import.js?v=20260704g"></script>
+<script src="js/profiles.js?v=20260704g"></script>
+</body>
+</html>

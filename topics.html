@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Topics — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item active"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div><div class="page-title">📚 Daily Topics</div><div class="page-subtitle">Track what topics were covered per student per day</div></div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-primary" onclick="openAddTopicModal()">➕ Add Topic</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="topics">
+      <!-- Filter Bar -->
+      <div class="sticky-filters">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <div class="search-wrapper" style="flex:1;min-width:180px">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="topicSearch" class="form-control" placeholder="Search topics...">
+          </div>
+          <select id="topicStudentFilter" class="form-control" style="width:auto" onchange="filterTopicsByStudent()">
+            <option value="">All Students</option>
+          </select>
+          <div class="status-tab-bar" id="topicStatusTabs" style="flex-wrap:nowrap">
+            <button class="status-tab active" onclick="setTopicStatusTab('',this)">All</button>
+            <button class="status-tab st-pending" onclick="setTopicStatusTab('Pending',this)">⏳ Pending</button>
+            <button class="status-tab st-continue" onclick="setTopicStatusTab('In Progress',this)">▶️ In Progress</button>
+            <button class="status-tab st-complete" onclick="setTopicStatusTab('Completed',this)">✅ Completed</button>
+          </div>
+          <button class="btn btn-sm btn-secondary" onclick="exportTopics()">📤 Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Topics Table -->
+      <div class="glass-panel" style="padding:0">
+        <div class="table-container">
+          <table id="topicsTableEl">
+            <thead><tr>
+              <th>Date</th><th>Time</th><th>Topic</th><th>Student</th>
+              <th>Teacher</th><th>Course</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="topicsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT TOPIC MODAL -->
+<div class="modal-overlay" id="topicModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="topicModalTitle">➕ Add Daily Topic</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="topicForm">
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">Topic Name *</label>
+            <input type="text" id="tf_topic" class="form-control" placeholder="e.g. Introduction to HTML, MS Excel Functions..." required>
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">Sub-topics / Details</label>
+            <textarea id="tf_subtopics" class="form-control" rows="2" placeholder="e.g. Tags, Attributes, Tables, Forms..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Student</label>
+            <select id="tf_student" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teacher</label>
+            <select id="tf_teacher" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="tf_date" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time</label>
+            <input type="time" id="tf_time" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Course / Subject</label>
+            <input type="text" id="tf_course" class="form-control" placeholder="e.g. Web Designing">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="tf_status" class="form-control">
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+              <option>Revised</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">Homework / Assignment</label>
+            <input type="text" id="tf_homework" class="form-control" placeholder="What was assigned for practice?">
+          </div>
+          <div class="form-group" style="grid-column:span 2">
+            <label class="form-label">Notes</label>
+            <textarea id="tf_notes" class="form-control" rows="2" placeholder="Any additional notes..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('topicForm').dispatchEvent(new Event('submit'))">💾 Save Topic</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/topics.js?v=20260704g"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const students=DB.getStudents();
+    const sel=document.getElementById('topicStudentFilter');
+    if(sel) students.forEach(s=>{ const o=document.createElement('option'); o.value=s.name; o.textContent=s.name; sel.appendChild(o); });
+  });
+</script>
+<script>
+let _topicStatusFilter = '';
+function setTopicStatusTab(status, btn) {
+  _topicStatusFilter = status;
+  document.querySelectorAll('#topicStatusTabs .status-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  filterTopics();
+}
+function filterTopics() {
+  if (typeof renderTopicsTable === 'function') renderTopicsTable();
+  if (typeof filterTopicsByStudent === 'function') filterTopicsByStudent();
+}
+</script>
+</body>
+</html>

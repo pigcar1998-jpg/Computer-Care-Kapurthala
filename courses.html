@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courses — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item active"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div><div class="page-title">🎓 Courses</div><div class="page-subtitle">Manage available courses and sub-categories</div></div>
+      </div>
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-primary" onclick="openAddCourseModal()">➕ Add Course</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px" id="coursesGrid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD/EDIT COURSE MODAL -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="courseModalTitle">➕ Add Course</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="courseForm">
+        <div class="form-group mb-2"><label class="form-label">Course Name *</label><input type="text" id="cf_name" class="form-control" required></div>
+        <div class="form-group mb-2"><label class="form-label">Duration</label><input type="text" id="cf_duration" class="form-control" placeholder="e.g. 3 Months"></div>
+        <div class="form-group mb-2"><label class="form-label">Fees (₹)</label><input type="number" id="cf_fees" class="form-control"></div>
+        <div class="form-group">
+          <label class="form-label">Sub-categories (one per line)</label>
+          <textarea id="cf_subcategories" class="form-control" rows="5" placeholder="Computer Fundamentals&#10;Typing&#10;Microsoft Word"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCourse()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script>
+  let editingCourseId = null;
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    Auth.requireAuth(['admin','teacher']);
+    renderCourses();
+  });
+
+  function renderCourses() {
+    const courses = DB.getCourses();
+    const students = DB.getStudents();
+    const grid = document.getElementById('coursesGrid');
+    if (!grid) return;
+    grid.innerHTML = courses.map(c=>{
+      const count = students.filter(s=>s.courseId===c.id).length;
+      return `<div class="glass-panel" style="padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
+          <h4 style="font-size:0.95rem;color:var(--primary);flex:1">${c.name}</h4>
+          <div style="display:flex;gap:4px">
+            <button class="btn btn-sm btn-ghost" onclick="editCourse('${c.id}')">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCourse('${c.id}','${c.name}')">🗑</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <span class="badge badge-info">${c.duration||'—'}</span>
+          <span class="badge badge-primary">${Fmt.currency(c.fees||0)}</span>
+          <span class="badge badge-success">${count} students</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${(c.subcategories||[]).map(sub=>`<span style="background:var(--glass-bg-ultra-light);border:1px solid var(--glass-border);border-radius:6px;padding:2px 8px;font-size:0.72rem;color:var(--text-muted)">${sub}</span>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openAddCourseModal() {
+    editingCourseId = null;
+    document.getElementById('courseModalTitle').textContent = '➕ Add Course';
+    document.getElementById('courseForm').reset();
+    Modal.open('courseModal');
+  }
+
+  function editCourse(id) {
+    editingCourseId = id;
+    const c = DB.getCourses().find(x=>x.id===id);
+    if(!c) return;
+    document.getElementById('courseModalTitle').textContent = '✏️ Edit — '+c.name;
+    document.getElementById('cf_name').value = c.name||'';
+    document.getElementById('cf_duration').value = c.duration||'';
+    document.getElementById('cf_fees').value = c.fees||'';
+    document.getElementById('cf_subcategories').value = (c.subcategories||[]).join('\n');
+    Modal.open('courseModal');
+  }
+
+  function saveCourse() {
+    const name = document.getElementById('cf_name').value.trim();
+    if (!name) { Toast.warning('Course name required'); return; }
+    const subcategories = document.getElementById('cf_subcategories').value
+      .split('\n').map(s=>s.trim()).filter(Boolean);
+    const data = {
+      name,
+      duration: document.getElementById('cf_duration').value,
+      fees: Number(document.getElementById('cf_fees').value)||0,
+      subcategories,
+    };
+    if (editingCourseId) { DB.updateCourse(editingCourseId,data); Toast.success('Course updated!'); }
+    else { DB.addCourse(data); Toast.success('Course added!'); }
+    Modal.close('courseModal');
+    renderCourses();
+  }
+
+  function deleteCourse(id,name) {
+    if(!confirm(`Delete course "${name}"?`)) return;
+    DB.deleteCourse(id);
+    renderCourses();
+    Toast.success('Deleted!');
+  }
+</script>
+</body>
+</html>

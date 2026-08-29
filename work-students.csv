@@ -1,0 +1,4 @@
+"ID","Name","Father","Mobile","Email","Course","Batch","Status","Total Fees"
+"s1","Rahul Kumar","Suresh Kumar","8765432100","rahul@email.com","Basic Computer Course","Batch 1","Continue","3000"
+"s2","Priya Sharma","Rajesh Sharma","8765432101","priya@email.com","Graphic Designing","Batch 2","Complete","5000"
+"s3","Amit Singh","Gurpreet Singh","8765432102","amit@email.com","Web Designing","Batch 1","Continue","8000"

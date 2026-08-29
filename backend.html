@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend & Database - Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">💻</span><span class="nav-label">PC Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <a href="backend.html" class="nav-item active"><span class="nav-icon">🗄️</span><span class="nav-label">Backend & DB</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">🗄️ Backend & Database</div>
+          <div class="page-subtitle">Control local browser data and the JSON backend database</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <div class="stats-grid">
+        <div class="stat-card" style="--card-color:var(--success)">
+          <div class="stat-icon">🟢</div>
+          <div class="stat-value" id="backendStatus">Checking</div>
+          <div class="stat-label">Server Status</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--primary)">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="localStudentCount">0</div>
+          <div class="stat-label">Local Students</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--secondary)">
+          <div class="stat-icon">👨‍🏫</div>
+          <div class="stat-value" id="localTeacherCount">0</div>
+          <div class="stat-label">Local Teachers</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--accent)">
+          <div class="stat-icon">💾</div>
+          <div class="stat-value" id="serverUpdatedAt">-</div>
+          <div class="stat-label">Server Updated</div>
+        </div>
+      </div>
+
+      <div class="backend-grid">
+        <div class="glass-panel">
+          <h3 class="section-title">⚙️ Data Controls</h3>
+          <div class="backend-actions">
+            <button class="btn btn-primary" onclick="syncLocalToServer()">⬆️ Save Browser Data To Server</button>
+            <button class="btn btn-secondary" onclick="loadServerToLocal()">⬇️ Load Server Data To Browser</button>
+            <button class="btn btn-success" onclick="downloadServerJSON()">🗄️ Download Server JSON</button>
+            <button class="btn btn-ghost" onclick="downloadLocalJSON()">📦 Download Browser Backup</button>
+          </div>
+          <div class="glass-card backend-note">
+            <strong>Backend mode:</strong> run <code>npm start</code>, then open <code>http://localhost:3000</code>.
+            If you open <code>index.html</code> directly, the app still works with browser LocalStorage.
+          </div>
+        </div>
+
+        <div class="glass-panel">
+          <h3 class="section-title">📥 Restore Backup</h3>
+          <p class="text-muted" style="margin:8px 0 14px">Import a previous browser/server JSON backup into this browser, then save it to the backend.</p>
+          <input type="file" id="backendImportFile" class="form-control" accept="application/json,.json">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn btn-secondary" onclick="importBackendSnapshot()">Import Into Browser</button>
+            <button class="btn btn-primary" onclick="syncLocalToServer()">Save Imported Data</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="storageHubPage" class="storage-hub-layout" style="margin-top:20px">
+        <div class="glass-panel">
+          <div class="section-header">
+            <h3 class="section-title">Storage Hub</h3>
+            <button class="btn btn-sm btn-secondary" onclick="StorageHub.refresh()">Refresh</button>
+          </div>
+          <div id="storageStatusSummary" class="storage-summary-grid"></div>
+
+          <div class="storage-action-grid">
+            <button class="btn btn-primary" onclick="storageSaveServer()">Save To Backend</button>
+            <button class="btn btn-secondary" onclick="storageLoadServer()">Load From Backend</button>
+            <button class="btn btn-success" onclick="storageExportMasterExcel()">Export Master Excel</button>
+            <button class="btn btn-ghost" onclick="storageDownloadFlatFile()">Download Flat JSON</button>
+            <button class="btn btn-ghost" onclick="storageDownloadCsv()">Download Storage CSV</button>
+            <button class="btn btn-ghost" onclick="storageDownloadXml()">Download XML</button>
+            <button class="btn btn-ghost" onclick="storageDownloadPdf()">Open Storage PDF</button>
+          </div>
+
+          <div class="glass-card backend-note">
+            <strong>Same data model:</strong> every storage option uses the existing academy database keys, functions, queries, and browser/backend sync behavior.
+          </div>
+        </div>
+
+        <div class="glass-panel">
+          <h3 class="section-title">Browser Storage</h3>
+          <div id="browserStorageSupport" class="database-summary"></div>
+          <div class="storage-action-grid">
+            <button class="btn btn-secondary" onclick="storageSaveSession()">Save Session Snapshot</button>
+            <button class="btn btn-secondary" onclick="storageSaveCookie()">Save Cookie Metadata</button>
+            <button class="btn btn-secondary" onclick="storageSaveIndexedDB()">Save IndexedDB Snapshot</button>
+            <button class="btn btn-secondary" onclick="storageSaveCache()">Save Cache API Snapshot</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-panel" style="margin-top:20px">
+        <div class="section-header">
+          <h3 class="section-title">Backend, API, Database, Cloud, EXE, APK Adapters</h3>
+          <a href="api/storage/adapters" class="btn btn-sm btn-ghost">Open API JSON</a>
+        </div>
+        <div id="backendAdapterSummary" class="backend-adapter-summary" style="margin-bottom:14px"></div>
+        <div id="storageAdapterGrid" class="storage-adapter-grid storage-scroll-panel"></div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="section-header">
+          <h3 class="section-title">📊 Database Summary</h3>
+          <button class="btn btn-sm btn-secondary" onclick="refreshBackendPage()">Refresh</button>
+        </div>
+        <div id="databaseSummary" class="database-summary"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/master-excel.js?v=20260704g"></script>
+<script src="js/backend.js?v=20260704g"></script>
+<script src="js/storage.js?v=20260704g"></script>
+</body>
+</html>

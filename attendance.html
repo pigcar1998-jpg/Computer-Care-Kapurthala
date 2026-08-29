@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Attendance — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+<style>
+/* ── Page-local overrides ── */
+.content-area {
+  padding: var(--resp-content-pad);
+  gap: var(--resp-gap);
+  display: flex;
+  flex-direction: column;
+}
+/* Ensure modules animate nicely */
+.section-module {
+  display: flex;
+  flex-direction: column;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+  max-height: 9999px;
+  overflow: visible;
+}
+.section-module.module-collapsed {
+  max-height: 0 !important;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  margin-bottom: 0 !important;
+}
+/* Rich-text editor area */
+.rich-editor {
+  min-height: 100px;
+  outline: none;
+  padding: 12px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-main);
+  caret-color: var(--primary);
+}
+.rich-editor:empty::before {
+  content: 'Type notes here…';
+  color: var(--text-muted);
+  pointer-events: none;
+}
+/* Export preview */
+.export-preview {
+  max-height: 320px;
+  overflow: auto;
+}
+.preview-table { border-collapse: collapse; width: 100%; font-size: 0.78rem; }
+.preview-table th { background: var(--glass-bg-heavy); color: var(--primary); padding: 8px 10px; border: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 2; }
+.preview-table td { padding: 6px 10px; border: 1px solid var(--glass-border); }
+.preview-table tr:nth-child(even) td { background: var(--glass-bg-ultra-light); }
+/* Section toggle pill */
+.section-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--glass-bg-ultra-light);
+  color: var(--text-muted);
+  user-select: none;
+}
+.section-pill.active { background: rgba(94,234,212,0.15); border-color: rgba(94,234,212,0.4); color: var(--primary); }
+.section-pill .pill-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+/* Responsive grid for controls */
+@media (max-width: 600px) {
+  .att-controls-row { flex-direction: column; }
+  .att-controls-row > * { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item active"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div>
+          <div class="page-title">📋 Attendance Register</div>
+          <div class="page-subtitle">Daily attendance for students and teachers</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <!-- Section visibility pills -->
+        <div id="sectionPills" style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="section-pill active" data-target="mod-summary" title="Toggle Summary">📊 Summary</span>
+          <span class="section-pill active" data-target="mod-legend" title="Toggle Legend">💡 Legend</span>
+          <span class="section-pill active" data-target="mod-notes" title="Toggle Notes">📝 Notes</span>
+          <span class="section-pill active" data-target="mod-export" title="Toggle Export">📤 Export</span>
+        </div>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="attendance">
+
+      <!-- ══ CONTROLS ══════════════════════════════════════════════════ -->
+      <div class="sticky-filters">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between" class="att-controls-row">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="tab-nav" style="display:inline-flex">
+              <button class="tab-btn active" data-att-type="students">👨‍🎓 Students</button>
+              <button class="tab-btn" data-att-type="teachers">👨‍🏫 Teachers</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <label class="form-label" style="margin:0">Month:</label>
+              <input type="month" id="attMonthPicker" class="form-control" style="width:auto">
+            </div>
+            <select id="attCourseStatusFilter" class="form-control" style="display:none"></select>
+            <div class="status-tab-bar" style="flex-wrap:nowrap;overflow-x:auto" id="attStatusTabs">
+              <button class="status-tab active" onclick="setAttStatusTab('All',this)">All</button>
+              <button class="status-tab st-pending" onclick="setAttStatusTab('Pending',this)">⏳ Pending</button>
+              <button class="status-tab st-continue" onclick="setAttStatusTab('Continue',this)">▶️ Continue</button>
+              <button class="status-tab st-complete" onclick="setAttStatusTab('Complete',this)">✅ Complete</button>
+              <button class="status-tab st-leave" onclick="setAttStatusTab('Leave',this)">🌿 Leave</button>
+              <button class="status-tab st-left" onclick="setAttStatusTab('Left',this)">🚪 Left</button>
+            </div>
+            <select id="attGenderFilter" class="form-control" style="width:auto">
+              <option value="All">All Boys & Girls</option>
+              <option value="Male">Boys / Male</option>
+              <option value="Female">Girls / Female</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-sm btn-success" onclick="markAllPresent()">✅ Mark All Present</button>
+            <button class="btn btn-sm btn-secondary" onclick="openExportPanel()">📤 Export</button>
+            <button class="btn btn-sm btn-secondary" onclick="printAttendance()">🖨 Print PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE: LEGEND ════════════════════════════════════════════ -->
+      <div class="section-module glass-card" style="padding:12px 16px" id="mod-legend">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:0.82rem;font-weight:600;color:var(--text-muted)">Click to cycle:</span>
+          <span class="badge" style="background:var(--glass-bg-ultra-light);color:var(--text-muted);border:1px solid var(--glass-border)">— Not Set</span>
+          <span class="badge badge-success">P = Present</span>
+          <span class="badge badge-danger">A = Absent</span>
+          <span class="badge badge-warning">L = Leave</span>
+          <span style="font-size:0.78rem;color:var(--text-muted)">💡 Click cycles through P → A → L → —</span>
+        </div>
+      </div>
+
+      <!-- ══ MODULE: SUMMARY STATS ══════════════════════════════════════ -->
+      <div class="section-module" id="mod-summary">
+        <div class="stats-grid">
+          <div class="stat-card" style="--card-color:var(--success)"><div class="stat-icon">✅</div><div class="stat-value" id="attSumPresent">0</div><div class="stat-label">Present</div></div>
+          <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-icon">❌</div><div class="stat-value" id="attSumAbsent">0</div><div class="stat-label">Absent</div></div>
+          <div class="stat-card" style="--card-color:var(--warning)"><div class="stat-icon">🏖️</div><div class="stat-value" id="attSumLeave">0</div><div class="stat-label">Leave</div></div>
+          <div class="stat-card" style="--card-color:var(--info)"><div class="stat-icon">📊</div><div class="stat-value" id="attSumPct">0%</div><div class="stat-label">Presence %</div></div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE: ATTENDANCE TABLE (always visible) ═══════════════════ -->
+      <div class="glass-panel att-table-panel">
+        <div class="att-table-header">
+          <h3 class="section-title">📋 Attendance Register</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span id="attRowCount" style="font-size:0.78rem;color:var(--text-muted)"></span>
+            <button class="btn btn-sm btn-ghost" onclick="scrollToTodayColumn()" title="Jump to Today">📅 Today</button>
+          </div>
+        </div>
+        <div id="attendanceTableWrap">
+          <div class="empty-state"><div class="loader"></div><p>Loading...</p></div>
+        </div>
+        <div class="scroll-hint">← Scroll horizontally →</div>
+      </div>
+
+      <!-- ══ MODULE: NOTES (rich-text with toolbar) ═════════════════════ -->
+      <div class="section-module glass-panel" id="mod-notes" style="padding:0">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <h3 class="section-title">📝 Attendance Notes</h3>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-ghost" onclick="saveAttNotes()">💾 Save Notes</button>
+            <button class="btn btn-sm btn-ghost" onclick="clearAttNotes()">🗑 Clear</button>
+          </div>
+        </div>
+        <div class="attendance-notes-meta">
+          <div class="form-group">
+            <label class="form-label">Notes Title</label>
+            <input id="attNotesTitle" class="form-control" placeholder="e.g. June attendance remarks, leave reasons, follow-up list">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes Type</label>
+            <select id="attNotesStatus" class="form-control">
+              <option>General</option>
+              <option>Follow Up</option>
+              <option>Leave Reason</option>
+              <option>Fee Reminder</option>
+              <option>Parent Call</option>
+              <option>Teacher Note</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes Date</label>
+            <input id="attNotesDate" type="date" class="form-control">
+          </div>
+        </div>
+        <!-- Formatting toolbar -->
+        <div class="format-toolbar" id="notesFmtBar">
+          <select class="fmt-select" onchange="execFmt('formatBlock',this.value);this.value=''" title="Heading / Paragraph">
+            <option value="">Paragraph</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+            <option value="h4">Heading 4</option>
+            <option value="p">Normal</option>
+            <option value="blockquote">Quote</option>
+          </select>
+          <select class="fmt-select" onchange="execFmt('fontSize',this.value);this.value=''" title="Font Size">
+            <option value="">Size</option>
+            <option value="1">8px</option>
+            <option value="2">10px</option>
+            <option value="3">12px</option>
+            <option value="4">14px</option>
+            <option value="5">18px</option>
+            <option value="6">24px</option>
+            <option value="7">36px</option>
+          </select>
+          <div class="fmt-divider"></div>
+          <button class="fmt-btn" onclick="execFmt('bold')" title="Bold"><b>B</b></button>
+          <button class="fmt-btn" onclick="execFmt('italic')" title="Italic"><i>I</i></button>
+          <button class="fmt-btn" onclick="execFmt('underline')" title="Underline"><u>U</u></button>
+          <button class="fmt-btn" onclick="execFmt('strikeThrough')" title="Strikethrough"><s>S</s></button>
+          <div class="fmt-divider"></div>
+          <button class="fmt-btn" onclick="execFmt('justifyLeft')" title="Align Left">≡</button>
+          <button class="fmt-btn" onclick="execFmt('justifyCenter')" title="Center">≡</button>
+          <button class="fmt-btn" onclick="execFmt('justifyRight')" title="Align Right">≡</button>
+          <div class="fmt-divider"></div>
+          <button class="fmt-btn" onclick="execFmt('insertUnorderedList')" title="Bullet List">• ≡</button>
+          <button class="fmt-btn" onclick="execFmt('insertOrderedList')" title="Numbered List">1. ≡</button>
+          <div class="fmt-divider"></div>
+          <input type="color" id="fmtColorPicker" style="width:30px;height:30px;border:none;background:transparent;cursor:pointer;padding:0;border-radius:4px" title="Text Color" onchange="execFmt('foreColor',this.value)">
+          <button class="fmt-btn" onclick="execFmt('removeFormat')" title="Clear Formatting" style="font-size:0.65rem">Aa</button>
+        </div>
+        <div class="rich-editor" id="attNotes" contenteditable="true" spellcheck="true"
+             style="padding:16px;min-height:100px;outline:none;font-size:0.9rem;line-height:1.7;color:var(--text-main)"
+             data-placeholder="Type attendance notes here…"></div>
+      </div>
+
+      <!-- ══ MODULE: EXPORT ════════════════════════════════════════════ -->
+      <div class="section-module glass-panel" id="mod-export" style="padding:0">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <h3 class="section-title">📤 Export & Preview</h3>
+          <button class="btn btn-sm btn-ghost" onclick="refreshExportPreview()">🔄 Refresh Preview</button>
+        </div>
+        <!-- Preview toolbar -->
+        <div class="export-preview-toolbar">
+          <span style="font-size:0.78rem;color:var(--text-muted)">Orientation:</span>
+          <button class="orient-btn active" id="orientPortrait" onclick="setOrientation('portrait')">📄 Portrait</button>
+          <button class="orient-btn" id="orientLandscape" onclick="setOrientation('landscape')">📃 Landscape</button>
+          <div class="fmt-divider"></div>
+          <span style="font-size:0.78rem;color:var(--text-muted)">Scale:</span>
+          <input type="range" class="scale-range" id="previewScale" min="50" max="150" value="100" oninput="setPreviewScale(this.value)" style="width:80px">
+          <span id="previewScaleLabel" style="font-size:0.75rem;color:var(--primary);min-width:36px">100%</span>
+        </div>
+        <!-- Export buttons -->
+        <div class="export-controls-bar">
+          <div class="export-btn-group">
+            <button class="export-btn pdf" onclick="exportAttendance('pdf')">
+              <span>📄</span> PDF
+            </button>
+            <button class="export-btn excel" onclick="exportAttendance('excel')">
+              <span>📊</span> Excel
+            </button>
+            <button class="export-btn word" onclick="exportAttendance('word')">
+              <span>📝</span> Word
+            </button>
+            <button class="export-btn csv" onclick="exportAttendance('csv')">
+              <span>📋</span> CSV
+            </button>
+            <button class="export-btn" onclick="printAttendance()" style="border-color:rgba(192,132,252,0.4);color:var(--violet)">
+              <span>🖨</span> Print
+            </button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:0.78rem;color:var(--text-muted)">Font size:</label>
+            <select class="fmt-select" id="exportFontSize">
+              <option value="9">9pt (Compact)</option>
+              <option value="10" selected>10pt (Default)</option>
+              <option value="11">11pt (Large)</option>
+              <option value="12">12pt (XL)</option>
+            </select>
+            <label style="font-size:0.78rem;color:var(--text-muted)">Include:</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:0.78rem;cursor:pointer">
+              <input type="checkbox" id="expIncNotes" checked> Notes
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:0.78rem;cursor:pointer">
+              <input type="checkbox" id="expIncSummary" checked> Summary
+            </label>
+          </div>
+        </div>
+        <!-- Preview area -->
+        <div style="padding:12px 16px 16px">
+          <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px">Preview:</div>
+          <div class="export-preview" id="exportPreview">
+            <div class="export-preview-inner" id="exportPreviewInner">
+              <div class="empty-state" style="padding:20px">
+                <p style="color:var(--text-muted)">Click "Refresh Preview" to generate export preview</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </main>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/attendance.js?v=20260704g"></script>
+
+<script>
+/* ── Section status tab helper ────────────────────────── */
+function setAttStatusTab(status, btn) {
+  document.getElementById('attCourseStatusFilter').value = status;
+  document.querySelectorAll('#attStatusTabs .status-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (typeof renderAttendanceTable === 'function') renderAttendanceTable();
+}
+
+/* ── Module toggle pills ──────────────────────────────── */
+document.querySelectorAll('[data-target]').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const target = document.getElementById(pill.dataset.target);
+    if (!target) return;
+    const isCollapsed = target.classList.contains('module-collapsed');
+    if (isCollapsed) {
+      target.classList.remove('module-collapsed');
+      pill.classList.add('active');
+    } else {
+      target.classList.add('module-collapsed');
+      pill.classList.remove('active');
+    }
+  });
+});
+
+/* ── Rich text exec ──────────────────────────────────── */
+function execFmt(cmd, val) {
+  document.getElementById('attNotes').focus();
+  document.execCommand(cmd, false, val || null);
+}
+
+/* ── Notes save/clear ────────────────────────────────── */
+function getAttNotesMeta() {
+  return {
+    title: document.getElementById('attNotesTitle')?.value || '',
+    status: document.getElementById('attNotesStatus')?.value || 'General',
+    date: document.getElementById('attNotesDate')?.value || new Date().toISOString().slice(0,10),
+  };
+}
+
+function saveAttNotes() {
+  const notes = document.getElementById('attNotes').innerHTML;
+  try {
+    localStorage.setItem('att_notes_v1', notes);
+    localStorage.setItem('att_notes_meta_v1', JSON.stringify(getAttNotesMeta()));
+  } catch(e) {}
+  Toast.success('Notes saved');
+}
+function clearAttNotes() {
+  if (!confirm('Clear all notes?')) return;
+  document.getElementById('attNotes').innerHTML = '';
+  const title = document.getElementById('attNotesTitle');
+  const status = document.getElementById('attNotesStatus');
+  const date = document.getElementById('attNotesDate');
+  if (title) title.value = '';
+  if (status) status.value = 'General';
+  if (date) date.value = new Date().toISOString().slice(0,10);
+  try {
+    localStorage.removeItem('att_notes_v1');
+    localStorage.removeItem('att_notes_meta_v1');
+  } catch(e) {}
+  Toast.info('Notes cleared');
+}
+function loadAttNotes() {
+  try {
+    const n = localStorage.getItem('att_notes_v1');
+    if (n) document.getElementById('attNotes').innerHTML = n;
+    const meta = JSON.parse(localStorage.getItem('att_notes_meta_v1') || '{}');
+    const title = document.getElementById('attNotesTitle');
+    const status = document.getElementById('attNotesStatus');
+    const date = document.getElementById('attNotesDate');
+    if (title) title.value = meta.title || '';
+    if (status) status.value = meta.status || 'General';
+    if (date) date.value = meta.date || new Date().toISOString().slice(0,10);
+  } catch(e) {}
+}
+
+/* ── Export preview ──────────────────────────────────── */
+let _exportOrientation = 'portrait';
+let _exportScale = 100;
+
+function setOrientation(o) {
+  _exportOrientation = o;
+  document.getElementById('orientPortrait').classList.toggle('active', o === 'portrait');
+  document.getElementById('orientLandscape').classList.toggle('active', o === 'landscape');
+}
+function setPreviewScale(v) {
+  _exportScale = v;
+  document.getElementById('previewScaleLabel').textContent = v + '%';
+  const inner = document.getElementById('exportPreviewInner');
+  if (inner) inner.style.transform = `scale(${v/100})`;
+}
+
+function openExportPanel() {
+  const mod = document.getElementById('mod-export');
+  if (mod) {
+    mod.classList.remove('module-collapsed');
+    document.querySelector('[data-target="mod-export"]')?.classList.add('active');
+    mod.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  refreshExportPreview();
+}
+
+function refreshExportPreview() {
+  const inner = document.getElementById('exportPreviewInner');
+  if (!inner) return;
+
+  const people = (typeof getAttendancePeople === 'function') ? getAttendancePeople() : [];
+  const month = (typeof currentMonth !== 'undefined') ? currentMonth : new Date().toISOString().slice(0,7);
+  const attData = (typeof DB !== 'undefined') ? DB.getAttendance(month) : {};
+  const days = month ? new Date(...month.split('-').map(Number), 0).getDate() : 30;
+
+  const hdrs = Array.from({length: Math.min(days, 16)}, (_,i) => `<th>${i+1}</th>`).join('') + (days > 16 ? '<th>…</th>' : '') + '<th>P</th><th>A</th><th>L</th><th>%</th>';
+  const rows = people.slice(0, 20).map(p => {
+    const pAtt = attData[p.id] || {};
+    let P=0,A=0,L=0;
+    for (let d=1;d<=days;d++) { const s=pAtt[d]||''; if(s==='P')P++; else if(s==='A')A++; else if(s==='L')L++; }
+    const pct = P+A+L > 0 ? Math.round(P/(P+A+L)*100) : 0;
+    const cells = Array.from({length: Math.min(days,16)}, (_,i) => {
+      const s = pAtt[i+1]||'';
+      const c = s==='P'?'#34d399':s==='A'?'#fb7185':s==='L'?'#fbbf24':'#666';
+      return `<td style="text-align:center;color:${c};font-weight:700">${s||'—'}</td>`;
+    }).join('') + (days > 16 ? '<td style="text-align:center">…</td>' : '');
+    return `<tr><td style="font-weight:600;white-space:nowrap">${p.name||''}</td>${cells}<td style="color:#34d399;text-align:center">${P}</td><td style="color:#fb7185;text-align:center">${A}</td><td style="color:#fbbf24;text-align:center">${L}</td><td style="color:#93c5fd;font-weight:700;text-align:center">${pct}%</td></tr>`;
+  }).join('');
+
+  const incSummary = document.getElementById('expIncSummary')?.checked;
+  const incNotes = document.getElementById('expIncNotes')?.checked;
+  const notesMeta = getAttNotesMeta();
+  const notesHTML = incNotes ? `<div style="margin-top:12px;padding:10px;border:1px solid #333;border-radius:6px"><strong>${notesMeta.title || 'Attendance Notes'}</strong><div style="font-size:0.78em;color:#555;margin:3px 0 8px">Type: ${notesMeta.status || 'General'} | Date: ${notesMeta.date || month}</div><div>${document.getElementById('attNotes')?.innerHTML||''}</div></div>` : '';
+  const summEl = incSummary ? `<div style="margin-bottom:10px;font-size:0.8rem;color:#aaa">Showing ${people.length} records for ${month}</div>` : '';
+
+  const fontSize = document.getElementById('exportFontSize')?.value || '10';
+  inner.style.transform = `scale(${_exportScale/100})`;
+  inner.style.fontSize = fontSize + 'pt';
+  inner.innerHTML = `
+    <div style="font-family:sans-serif;background:#fff;color:#000;padding:16px;border-radius:6px;min-width:500px">
+      <h2 style="margin-bottom:4px;font-size:1.1em">📋 Attendance Register — ${month}</h2>
+      ${summEl}
+      <div style="overflow-x:auto">
+        <table class="preview-table" style="border-collapse:collapse;width:100%;font-size:${fontSize}pt">
+          <thead><tr style="background:#f0f4f8"><th style="text-align:left;padding:6px 10px;border:1px solid #ddd;white-space:nowrap">Name</th>${hdrs}</tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      ${people.length > 20 ? `<p style="font-size:0.75em;color:#888;margin-top:8px">… and ${people.length - 20} more rows</p>` : ''}
+      ${notesHTML}
+    </div>`;
+
+  Toast.info('Preview updated');
+}
+
+/* ── Export dispatcher ───────────────────────────────── */
+function exportAttendance(format) {
+  if (format === 'csv') {
+    if (typeof exportAttendance_orig === 'function') { exportAttendance_orig(); return; }
+    const people = typeof getAttendancePeople === 'function' ? getAttendancePeople() : [];
+    const month = typeof currentMonth !== 'undefined' ? currentMonth : new Date().toISOString().slice(0,7);
+    const attData = typeof DB !== 'undefined' ? DB.getAttendance(month) : {};
+    const days = new Date(...month.split('-').map(Number), 0).getDate();
+    const headers = ['Name', ...Array.from({length:days},(_,i)=>`Day ${i+1}`), 'Present','Absent','Leave','%'];
+    const rows = people.map(p => {
+      const pAtt = attData[p.id]||{};
+      const dayVals = Array.from({length:days},(_,i)=>pAtt[i+1]||'');
+      const P=dayVals.filter(v=>v==='P').length, A=dayVals.filter(v=>v==='A').length, L=dayVals.filter(v=>v==='L').length;
+      const pct = P+A+L>0?Math.round(P/(P+A+L)*100)+'%':'0%';
+      return [p.name,...dayVals,P,A,L,pct];
+    });
+    if (typeof Exporter !== 'undefined') { Exporter.toCSV(headers,rows,`attendance_${month}.csv`); Toast.success('CSV exported!'); }
+    return;
+  }
+  if (format === 'pdf') { printAttendance(); return; }
+  if (format === 'excel') {
+    if (typeof window.XLSX !== 'undefined') {
+      const people = typeof getAttendancePeople === 'function' ? getAttendancePeople() : [];
+      const month = typeof currentMonth !== 'undefined' ? currentMonth : new Date().toISOString().slice(0,7);
+      const attData = typeof DB !== 'undefined' ? DB.getAttendance(month) : {};
+      const data = people.map(p => {
+        const pAtt = attData[p.id]||{};
+        const P=Object.values(pAtt).filter(v=>v==='P').length;
+        const A=Object.values(pAtt).filter(v=>v==='A').length;
+        const L=Object.values(pAtt).filter(v=>v==='L').length;
+        return { Student:p.name, Month:month, Present:P, Absent:A, Leave:L, Percentage: P+A+L>0?Math.round(P/(P+A+L)*100)+'%':'0%' };
+      });
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
+      XLSX.writeFile(wb, `attendance_${month}.xlsx`);
+      Toast.success('Excel exported!');
+    } else { Toast.warning('Export Excel: open reports page for full Excel export'); }
+    return;
+  }
+  if (format === 'word') {
+    refreshExportPreview();
+    const inner = document.getElementById('exportPreviewInner');
+    const html = inner ? inner.innerHTML : '<p>No data</p>';
+    const blob = new Blob([`<html><head><style>body{font-family:Calibri,sans-serif;font-size:11pt}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:5px 8px}</style></head><body>${html}</body></html>`], {type:'application/msword'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const month = typeof currentMonth !== 'undefined' ? currentMonth : new Date().toISOString().slice(0,7);
+    a.href=url; a.download=`attendance_${month}.doc`; a.click();
+    URL.revokeObjectURL(url);
+    Toast.success('Word document downloaded!');
+    return;
+  }
+}
+
+/* ── Row count display ───────────────────────────────── */
+function updateRowCount() {
+  const people = typeof getAttendancePeople === 'function' ? getAttendancePeople() : [];
+  const el = document.getElementById('attRowCount');
+  if (el) el.textContent = `${people.length} record${people.length!==1?'s':''}`;
+}
+
+/* ── Patch renderAttendanceTable to also update row count ── */
+const _origRender = typeof renderAttendanceTable !== 'undefined' ? renderAttendanceTable : null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadAttNotes();
+
+  // Patch render to update count after load
+  const origRender = window.renderAttendanceTable;
+  if (origRender) {
+    window.renderAttendanceTable = function() {
+      origRender.apply(this, arguments);
+      setTimeout(updateRowCount, 100);
+    };
+  }
+
+  // Also rename original exportAttendance to avoid conflict
+  if (typeof window.exportAttendance === 'function' && window.exportAttendance.toString().includes('toCSV')) {
+    window.exportAttendance_orig = window.exportAttendance;
+  }
+
+  // Sidebar open on mobile
+  document.getElementById('sidebarOverlay')?.addEventListener('click', () => {
+    document.getElementById('sidebar')?.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>

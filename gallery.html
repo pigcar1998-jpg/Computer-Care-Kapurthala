@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Computer Care</title>
+<link rel="stylesheet" href="css/styles.css?v=20260704g">
+<style>
+.lightbox {
+  display:none; position:fixed; inset:0; z-index:2000;
+  background:rgba(0,0,0,0.95);
+  align-items:center; justify-content:center;
+  flex-direction:column; gap:16px;
+}
+.lightbox-img { max-width:90vw; max-height:75vh; border-radius:12px; object-fit:contain; }
+.lightbox-nav { display:flex; gap:16px; align-items:center; }
+</style>
+</head>
+<body>
+<div class="app-wrapper">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-icon">CC</div>
+      <div class="brand-text"><h2>Computer Care</h2><p>Anubhav EduVista</p></div>
+    </div>
+    <nav class="nav-menu">
+      <span class="nav-section-title">Main</span>
+      <a href="teacher-dashboard.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-label">Dashboard</span></a>
+      <a href="students.html" class="nav-item"><span class="nav-icon">👥</span><span class="nav-label">Students & Teachers</span></a>
+      <a href="fees.html" class="nav-item"><span class="nav-icon">💰</span><span class="nav-label">Fees Management</span></a>
+      <a href="attendance.html" class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Attendance</span></a>
+      <a href="timetable.html" class="nav-item"><span class="nav-icon">📅</span><span class="nav-label">Time Table</span></a>
+      <span class="nav-section-title">Content</span>
+      <a href="topics.html" class="nav-item"><span class="nav-icon">📚</span><span class="nav-label">Daily Topics</span></a>
+      <a href="teacher-notes.html" class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Notes & Syllabus</span></a>
+      <a href="gallery.html" class="nav-item active"><span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span></a>
+      <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span class="nav-label">Reports & Export</span></a>
+      <span class="nav-section-title">Management</span>
+      <a href="notifications.html" class="nav-item"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span></a>
+      <a href="tasks.html" class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a href="salary.html" class="nav-item"><span class="nav-icon">💼</span><span class="nav-label">Salary</span></a>
+      <a href="courses.html" class="nav-item"><span class="nav-icon">🎓</span><span class="nav-label">Courses</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-info">Near Landon Hotel, Kapurthala<br>+91 78371-96514</div>
+      <button class="btn btn-danger btn-sm w-full" id="logoutBtn">🚪 Logout</button>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="toggle-sidebar-btn" id="toggleSidebar">☰</button>
+        <div><div class="page-title">🖼️ Gallery</div><div class="page-subtitle">Academy photo gallery and media library</div></div>
+      </div>
+      <div class="header-right">
+        <span id="autoSaveIndicator" style="font-size:0.75rem;color:var(--success);opacity:0;transition:opacity 0.5s"></span>
+        <button class="theme-toggle" id="themeToggle">🌙</button>
+        <div id="headerUser" style="display:flex;align-items:center;gap:8px"></div>
+        <button class="btn btn-primary" onclick="Modal.open('uploadModal')">📸 Upload Image</button>
+        <button class="btn btn-ghost btn-sm" onclick="Auth.logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-area" data-scroll-restore="gallery">
+      <!-- Filter Bar -->
+      <div class="glass-panel" style="padding:14px 18px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <div class="search-wrapper" style="flex:1;min-width:200px">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="gallerySearch" class="form-control" placeholder="Search by title, category, tags...">
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-ghost" onclick="renderGallery()">All</button>
+            <button class="btn btn-sm btn-ghost" onclick="renderGallery('class')">🏫 Classes</button>
+            <button class="btn btn-sm btn-ghost" onclick="renderGallery('event')">🎉 Events</button>
+            <button class="btn btn-sm btn-ghost" onclick="renderGallery('certificate')">🎓 Certs</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Grid -->
+      <div class="gallery-grid" id="galleryGrid" style="min-height:200px">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted)">
+          <div class="loader"></div>
+          <p style="margin-top:16px">Loading gallery...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">📸 Upload Image</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="uploadForm">
+        <div class="upload-area" id="dropArea" onclick="document.getElementById('imgFile').click()">
+          <div class="upload-icon">📷</div>
+          <div style="font-size:1rem;font-weight:600;margin-bottom:4px">Drop image here or click to browse</div>
+          <div class="upload-text">Supports: JPG, PNG, GIF, WebP</div>
+          <input type="file" id="imgFile" accept="image/*" style="display:none">
+        </div>
+        <img id="imgPreview" style="display:none;max-height:160px;width:100%;object-fit:contain;border-radius:8px;margin-top:12px;border:1px solid var(--glass-border)">
+        <div class="form-grid" style="margin-top:16px">
+          <div class="form-group"><label class="form-label">Title *</label><input type="text" id="imgTitle" class="form-control" placeholder="Image title" required></div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="imgCategory" class="form-control">
+              <option value="">General</option>
+              <option value="class">Class Activity</option>
+              <option value="event">Academy Event</option>
+              <option value="certificate">Certificate</option>
+              <option value="student">Student Work</option>
+              <option value="infrastructure">Infrastructure</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Tags (comma separated)</label><input type="text" id="imgTags" class="form-control" placeholder="e.g. web design, batch 1, 2024"></div>
+          <div class="form-group" style="grid-column:span 2"><label class="form-label">Description</label><textarea id="imgDesc" class="form-control" rows="2" placeholder="Optional description"></textarea></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('uploadForm').dispatchEvent(new Event('submit'))">📤 Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT GALLERY ITEM MODAL -->
+<div class="modal-overlay" id="editGalleryModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 class="modal-title">✏️ Edit Gallery Item</h3>
+      <button class="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="editGalleryForm">
+        <input type="hidden" id="editGalleryId">
+        <div class="form-group mb-2"><label class="form-label">Title</label><input type="text" id="editImgTitle" class="form-control"></div>
+        <div class="form-group mb-2">
+          <label class="form-label">Category</label>
+          <select id="editImgCategory" class="form-control">
+            <option value="">General</option>
+            <option value="class">Class Activity</option>
+            <option value="event">Academy Event</option>
+            <option value="certificate">Certificate</option>
+            <option value="student">Student Work</option>
+          </select>
+        </div>
+        <div class="form-group mb-2"><label class="form-label">Tags</label><input type="text" id="editImgTags" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea id="editImgDesc" class="form-control" rows="2"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary modal-close">Cancel</button>
+      <button class="btn btn-primary" onclick="document.getElementById('editGalleryForm').dispatchEvent(new Event('submit'))">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.2rem" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" class="lightbox-img" alt="" onclick="event.stopPropagation()">
+  <div id="lightboxTitle" style="color:#fff;font-size:1.1rem;font-weight:600;text-align:center"></div>
+  <div id="lightboxDesc" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-align:center"></div>
+  <div class="lightbox-nav" onclick="event.stopPropagation()">
+    <button class="btn btn-secondary" onclick="lightboxPrev()">◀ Prev</button>
+    <button class="btn btn-secondary" onclick="lightboxNext()">Next ▶</button>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="js/data.js?v=20260704g"></script>
+<script src="js/auth.js?v=20260704g"></script>
+<script src="js/app.js?v=20260704g"></script>
+<script src="js/gallery.js?v=20260704g"></script>
+</body>
+</html>
